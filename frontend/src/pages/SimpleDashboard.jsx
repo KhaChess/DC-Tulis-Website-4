@@ -29,10 +29,45 @@ const SimpleDashboard = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(0);
   const [stats, setStats] = useState({ sent: 0, failed: 0, uptime: '00:00:00' });
+  const [customChannels, setCustomChannels] = useState([]);
 
   useEffect(() => {
     setSelectedChannel(mockData.channels[0]?.id || '');
   }, []);
+
+  const addCustomChannel = () => {
+    if (!customChannelId.trim()) return;
+    
+    const extractedId = extractChannelId(customChannelId);
+    if (!extractedId) {
+      toast({
+        title: "Invalid Channel ID",
+        description: "Please enter a valid Discord Channel ID or URL.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newChannel = {
+      id: extractedId,
+      name: `custom-${extractedId.slice(-4)}`,
+      server: 'Custom Channel',
+      custom: true
+    };
+
+    // Check if already exists
+    const exists = customChannels.some(c => c.id === extractedId);
+    if (!exists) {
+      setCustomChannels(prev => [...prev, newChannel]);
+      toast({
+        title: "Channel Added",
+        description: `Custom channel ${extractedId} added to list.`,
+      });
+    }
+    
+    setSelectedChannel(extractedId);
+    setCustomChannelId('');
+  };
 
   const addMessage = () => {
     setMessageList([...messageList, '']);
