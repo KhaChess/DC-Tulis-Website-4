@@ -254,8 +254,9 @@ const SimpleDashboard = () => {
                       <Label className="text-white font-medium">🎯 Custom Discord Channel</Label>
                       <Input
                         placeholder="Masukkan Channel ID atau URL Discord..."
+                        value={customChannelId}
+                        onChange={(e) => setCustomChannelId(e.target.value)}
                         className="bg-slate-700 border border-slate-600 text-white placeholder-slate-400"
-                        onChange={(e) => setSelectedChannel(e.target.value)}
                       />
                       <div className="bg-slate-700/30 border border-slate-600 rounded-lg p-3">
                         <h4 className="text-white font-medium mb-2">💡 Cara mendapatkan Channel ID:</h4>
