@@ -187,6 +187,80 @@ async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
+@api_router.post("/auto-typer/start", response_model=AutoTyperSession)
+async def start_auto_typer_session(session_create: AutoTyperSessionCreate):
+    """Start a new Discord auto-typer session"""
+    session = AutoTyperSession(**session_create.dict())
+    
+    # Store in database
+    await db.auto_typer_sessions.insert_one(session.dict())
+    
+    # Initialize active session
+    active_sessions[session.id] = {
+        'status': 'starting',
+        'messages_sent': 0,
+        'messages_failed': 0,
+        'task': None
+    }
+    
+    # Start browser automation in background
+    task = asyncio.create_task(discord_automation(session.id, session))
+    active_sessions[session.id]['task'] = task
+    
+    logger.info(f"Started auto-typer session {session.id}")
+    return session
+
+@api_router.post("/auto-typer/{session_id}/stop")
+async def stop_auto_typer_session(session_id: str):
+    """Stop an active auto-typer session"""
+    if session_id in active_sessions:
+        active_sessions[session_id]['status'] = 'stopped'
+        
+        # Cancel the background task
+        if active_sessions[session_id]['task']:
+            active_sessions[session_id]['task'].cancel()
+        
+        # Update database
+        await db.auto_typer_sessions.update_one(
+            {"id": session_id},
+            {"$set": {"status": "stopped"}}
+        )
+        
+        logger.info(f"Stopped auto-typer session {session_id}")
+        return {"message": "Session stopped successfully"}
+    else:
+        return {"error": "Session not found"}
+
+@api_router.get("/auto-typer/{session_id}/status")
+async def get_auto_typer_session_status(session_id: str):
+    """Get the current status of an auto-typer session"""
+    # Get from database
+    session_data = await db.auto_typer_sessions.find_one({"id": session_id})
+    if not session_data:
+        return {"error": "Session not found"}
+    
+    # Merge with active session data if available
+    if session_id in active_sessions:
+        session_data['messages_sent'] = active_sessions[session_id]['messages_sent']
+        session_data['messages_failed'] = active_sessions[session_id]['messages_failed']
+        session_data['status'] = active_sessions[session_id]['status']
+    
+    return session_data
+
+@api_router.get("/auto-typer/sessions", response_model=List[AutoTyperSession])
+async def get_auto_typer_sessions():
+    """Get all auto-typer sessions"""
+    sessions = await db.auto_typer_sessions.find().sort("created_at", -1).limit(50).to_list(50)
+    
+    # Update with active session data
+    for session in sessions:
+        if session['id'] in active_sessions:
+            session['messages_sent'] = active_sessions[session['id']]['messages_sent']
+            session['messages_failed'] = active_sessions[session['id']]['messages_failed']
+            session['status'] = active_sessions[session['id']]['status']
+    
+    return [AutoTyperSession(**session) for session in sessions]
+
 # Include the router in the main app
 app.include_router(api_router)
 
