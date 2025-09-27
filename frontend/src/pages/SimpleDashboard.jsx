@@ -135,14 +135,72 @@ const SimpleDashboard = () => {
       return;
     }
 
+    // Start session
     setIsRunning(true);
     setProgress(0);
+    setSessionStartTime(Date.now());
+    setStats({ sent: 0, failed: 0, uptime: '00:00:00' });
     
     const channelDisplay = extractedId || selectedChannel;
     toast({
       title: "Session Started",
       description: `Discord auto-typer started for channel: ${channelDisplay}`,
     });
+
+    // Start uptime counter
+    uptimeIntervalRef.current = setInterval(() => {
+      if (sessionStartTime) {
+        const elapsed = Date.now() - sessionStartTime;
+        const hours = Math.floor(elapsed / 3600000);
+        const minutes = Math.floor((elapsed % 3600000) / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        setStats(prev => ({
+          ...prev,
+          uptime: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+        }));
+      }
+    }, 1000);
+
+    // Start message sending simulation
+    let messageIndex = 0;
+    messageIntervalRef.current = setInterval(() => {
+      const validMessages = messageList.filter(msg => msg.trim());
+      if (validMessages.length > 0) {
+        const currentMessage = validMessages[messageIndex % validMessages.length];
+        
+        // Simulate sending message (90% success rate)
+        const isSuccess = Math.random() > 0.1;
+        
+        setStats(prev => ({
+          ...prev,
+          sent: isSuccess ? prev.sent + 1 : prev.sent,
+          failed: isSuccess ? prev.failed : prev.failed + 1
+        }));
+
+        // Update progress
+        setProgress(prev => {
+          const newProgress = prev + (100 / validMessages.length);
+          return newProgress > 100 ? 100 : newProgress;
+        });
+
+        messageIndex++;
+        
+        console.log(`${isSuccess ? '✅' : '❌'} ${isSuccess ? 'Sent' : 'Failed'}: "${currentMessage}" to channel ${channelDisplay}`);
+        
+        if (isSuccess) {
+          toast({
+            title: "Message Sent",
+            description: `"${currentMessage.substring(0, 30)}${currentMessage.length > 30 ? '...' : ''}" sent to ${channelDisplay}`,
+          });
+        } else {
+          toast({
+            title: "Message Failed",
+            description: `Failed to send message to ${channelDisplay}`,
+            variant: "destructive"
+          });
+        }
+      }
+    }, messageDelay);
   };
 
   const stopSession = () => {
