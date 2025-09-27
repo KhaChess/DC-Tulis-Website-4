@@ -291,13 +291,18 @@ const SimpleDashboard = () => {
                       <option value="">Select a channel...</option>
                       
                       {/* Custom Channels */}
-                      {customChannels.length > 0 && (
-                        <optgroup label="📌 Your Custom Channels">
-                          {customChannels.map((channel) => (
-                            <option key={channel.id} value={channel.id}>
-                              #{channel.name} - ID: {channel.id}
-                            </option>
-                          ))}
+                      {(() => {
+                        console.log('Rendering dropdown, customChannels:', customChannels);
+                        return customChannels.length > 0 && (
+                          <optgroup label="📌 Your Custom Channels">
+                            {customChannels.map((channel) => (
+                              <option key={channel.id} value={channel.id}>
+                                #{channel.name} - ID: {channel.id}
+                              </option>
+                            ))}
+                          </optgroup>
+                        );
+                      })()}
                         </optgroup>
                       )}
                       
