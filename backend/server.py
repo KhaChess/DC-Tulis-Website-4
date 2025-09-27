@@ -28,6 +28,9 @@ app = FastAPI()
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Global storage for active sessions
+active_sessions: Dict[str, Dict[str, Any]] = {}
+
 
 # Define Models
 class StatusCheck(BaseModel):
