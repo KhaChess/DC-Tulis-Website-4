@@ -158,17 +158,16 @@ const SimpleDashboard = () => {
     });
 
     // Start uptime counter
+    const startTime = Date.now();
     uptimeIntervalRef.current = setInterval(() => {
-      if (sessionStartTime) {
-        const elapsed = Date.now() - sessionStartTime;
-        const hours = Math.floor(elapsed / 3600000);
-        const minutes = Math.floor((elapsed % 3600000) / 60000);
-        const seconds = Math.floor((elapsed % 60000) / 1000);
-        setStats(prev => ({
-          ...prev,
-          uptime: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-        }));
-      }
+      const elapsed = Date.now() - startTime;
+      const hours = Math.floor(elapsed / 3600000);
+      const minutes = Math.floor((elapsed % 3600000) / 60000);
+      const seconds = Math.floor((elapsed % 60000) / 1000);
+      setStats(prev => ({
+        ...prev,
+        uptime: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+      }));
     }, 1000);
 
     // Start message sending simulation
