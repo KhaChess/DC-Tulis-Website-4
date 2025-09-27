@@ -283,12 +283,27 @@ const SimpleDashboard = () => {
                       onChange={(e) => setSelectedChannel(e.target.value)}
                       className="w-full bg-slate-700 border border-slate-600 text-white rounded-md px-3 py-2"
                     >
-                      <option value="">Select a sample channel...</option>
-                      {mockData.channels.map((channel) => (
-                        <option key={channel.id} value={channel.id}>
-                          #{channel.name} ({channel.server})
-                        </option>
-                      ))}
+                      <option value="">Select a channel...</option>
+                      
+                      {/* Custom Channels */}
+                      {customChannels.length > 0 && (
+                        <optgroup label="📌 Your Custom Channels">
+                          {customChannels.map((channel) => (
+                            <option key={channel.id} value={channel.id}>
+                              #{channel.name} - ID: {channel.id}
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                      
+                      {/* Sample Channels */}
+                      <optgroup label="📋 Sample Channels">
+                        {mockData.channels.map((channel) => (
+                          <option key={channel.id} value={channel.id}>
+                            #{channel.name} ({channel.server})
+                          </option>
+                        ))}
+                      </optgroup>
                     </select>
                     <p className="text-xs text-slate-400">
                       Ini adalah contoh channel. Gunakan input di bawah untuk channel sesungguhnya.
