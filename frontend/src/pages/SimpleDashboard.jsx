@@ -32,8 +32,11 @@ const SimpleDashboard = () => {
   const [customChannels, setCustomChannels] = useState([]);
 
   useEffect(() => {
+    console.log('SimpleDashboard component mounted');
     setSelectedChannel(mockData.channels[0]?.id || '');
   }, []);
+
+  console.log('SimpleDashboard render - customChannels:', customChannels.length, 'selectedChannel:', selectedChannel);
 
   const addCustomChannel = () => {
     if (!customChannelId.trim()) return;
