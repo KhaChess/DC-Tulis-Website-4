@@ -23,6 +23,7 @@ import { mockData } from '../utils/mock';
 const SimpleDashboard = () => {
   const [messageList, setMessageList] = useState(['']);
   const [selectedChannel, setSelectedChannel] = useState('');
+  const [customChannelId, setCustomChannelId] = useState('');
   const [typingDelay, setTypingDelay] = useState(1000);
   const [messageDelay, setMessageDelay] = useState(5000);
   const [isRunning, setIsRunning] = useState(false);
