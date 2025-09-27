@@ -73,20 +73,24 @@ const Dashboard = () => {
     };
   }, []);
 
-  const addMessage = () => {
-    setMessageList([...messageList, '']);
-  };
+  const addMessage = useCallback(() => {
+    setMessageList(prev => [...prev, '']);
+  }, []);
 
-  const removeMessage = (index) => {
-    const newList = messageList.filter((_, i) => i !== index);
-    setMessageList(newList.length > 0 ? newList : ['']);
-  };
+  const removeMessage = useCallback((index) => {
+    setMessageList(prev => {
+      const newList = prev.filter((_, i) => i !== index);
+      return newList.length > 0 ? newList : [''];
+    });
+  }, []);
 
-  const updateMessage = (index, value) => {
-    const newList = [...messageList];
-    newList[index] = value;
-    setMessageList(newList);
-  };
+  const updateMessage = useCallback((index, value) => {
+    setMessageList(prev => {
+      const newList = [...prev];
+      newList[index] = value;
+      return newList;
+    });
+  }, []);
 
   const startSession = () => {
     if (!selectedChannel || messageList.every(msg => !msg.trim())) {
