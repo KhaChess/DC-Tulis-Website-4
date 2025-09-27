@@ -17,11 +17,16 @@ export const mockData = {
   ],
   
   channels: [
-    { id: 'general', name: 'general', type: 'text' },
-    { id: 'random', name: 'random', type: 'text' },
-    { id: 'gaming', name: 'gaming', type: 'text' },
-    { id: 'dev-chat', name: 'dev-chat', type: 'text' },
-    { id: 'announcements', name: 'announcements', type: 'text' }
+    { id: 'general', name: 'general', type: 'text', server: 'My Discord Server' },
+    { id: 'random', name: 'random', type: 'text', server: 'My Discord Server' },
+    { id: 'gaming', name: 'gaming', type: 'text', server: 'Gaming Community' },
+    { id: 'dev-chat', name: 'dev-chat', type: 'text', server: 'Developer Hub' },
+    { id: 'announcements', name: 'announcements', type: 'text', server: 'My Discord Server' },
+    { id: 'off-topic', name: 'off-topic', type: 'text', server: 'Community Server' },
+    { id: 'memes', name: 'memes', type: 'text', server: 'Fun Server' },
+    { id: 'crypto-discussion', name: 'crypto-discussion', type: 'text', server: 'Finance Hub' },
+    { id: 'tech-support', name: 'tech-support', type: 'text', server: 'Developer Hub' },
+    { id: 'music', name: 'music', type: 'text', server: 'Entertainment' }
   ],
   
   messages: [
