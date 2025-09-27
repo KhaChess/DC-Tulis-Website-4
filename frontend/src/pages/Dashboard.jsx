@@ -429,10 +429,15 @@ const Dashboard = () => {
                 </div>
                 
                 {progress > 0 && (
-                  <div className="space-y-2">
+                  <div className="space-y-2" key="progress-container">
                     <Label className="text-white text-sm">Session Progress</Label>
-                    <Progress value={progress} className="bg-slate-700" />
-                    <p className="text-xs text-slate-400">{progress}% completed</p>
+                    <div className="w-full bg-slate-700 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-slate-400">{Math.round(progress)}% completed</p>
                   </div>
                 )}
               </CardContent>
