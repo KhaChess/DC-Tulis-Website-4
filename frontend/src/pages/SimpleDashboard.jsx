@@ -237,10 +237,9 @@ const SimpleDashboard = () => {
     }
   };
 
-  const stopSession = () => {
+  const stopSession = async () => {
     setIsRunning(false);
     setProgress(0);
-    setSessionStartTime(null);
     
     // Clear intervals
     if (messageIntervalRef.current) {
@@ -252,9 +251,22 @@ const SimpleDashboard = () => {
       uptimeIntervalRef.current = null;
     }
     
+    // Stop backend session if we have a session ID
+    if (sessionStartTime && typeof sessionStartTime === 'string') {
+      try {
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auto-typer/${sessionStartTime}/stop`, {
+          method: 'POST'
+        });
+      } catch (error) {
+        console.error('Error stopping backend session:', error);
+      }
+    }
+    
+    setSessionStartTime(null);
+    
     toast({
       title: "Session Stopped",
-      description: "Auto-typer has been stopped.",
+      description: "Browser automation has been stopped.",
     });
     
     // Reset stats after a brief delay to show final count
