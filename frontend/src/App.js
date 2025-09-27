@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
+import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
 
 function App() {
