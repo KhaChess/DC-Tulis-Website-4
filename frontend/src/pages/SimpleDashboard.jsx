@@ -313,12 +313,21 @@ const SimpleDashboard = () => {
                   <div className="border-t border-slate-600 pt-4">
                     <div className="space-y-2">
                       <Label className="text-white font-medium">🎯 Custom Discord Channel</Label>
-                      <Input
-                        placeholder="Masukkan Channel ID atau URL Discord..."
-                        value={customChannelId}
-                        onChange={(e) => setCustomChannelId(e.target.value)}
-                        className="bg-slate-700 border border-slate-600 text-white placeholder-slate-400"
-                      />
+                      <div className="flex space-x-2">
+                        <Input
+                          placeholder="Masukkan Channel ID atau URL Discord..."
+                          value={customChannelId}
+                          onChange={(e) => setCustomChannelId(e.target.value)}
+                          className="bg-slate-700 border border-slate-600 text-white placeholder-slate-400 flex-1"
+                        />
+                        <Button
+                          onClick={addCustomChannel}
+                          variant="outline"
+                          className="bg-blue-600/20 border-blue-600 text-blue-400 hover:bg-blue-600/30"
+                        >
+                          Add
+                        </Button>
+                      </div>
                       <div className="bg-slate-700/30 border border-slate-600 rounded-lg p-3">
                         <h4 className="text-white font-medium mb-2">💡 Cara mendapatkan Channel ID:</h4>
                         <ul className="text-sm text-slate-300 space-y-1">
