@@ -329,6 +329,14 @@ const SimpleDashboard = () => {
                           placeholder="Masukkan Channel ID atau URL Discord..."
                           value={customChannelId}
                           onChange={(e) => setCustomChannelId(e.target.value)}
+                          onKeyDown={(e) => {
+                            console.log('Input key pressed:', e.key);
+                            if (e.key === 'Enter') {
+                              console.log('Enter pressed on input!');
+                              e.preventDefault();
+                              addCustomChannel();
+                            }
+                          }}
                           className="bg-slate-700 border border-slate-600 text-white placeholder-slate-400 flex-1"
                         />
                         <Button
