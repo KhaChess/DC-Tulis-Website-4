@@ -118,6 +118,10 @@ const Dashboard = () => {
   };
 
   const pauseSession = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
     setIsRunning(false);
     toast({
       title: "Session Paused",
@@ -126,8 +130,13 @@ const Dashboard = () => {
   };
 
   const stopSession = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
     setIsRunning(false);
     setProgress(0);
+    setStats({ sent: 0, failed: 0, uptime: '00:00:00' });
     toast({
       title: "Session Stopped",
       description: "Auto-typer has been stopped.",
