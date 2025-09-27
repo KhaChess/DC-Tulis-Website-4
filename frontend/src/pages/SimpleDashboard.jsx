@@ -187,6 +187,17 @@ const SimpleDashboard = () => {
                 </CardTitle>
                 <CardDescription className="text-slate-400">
                   Setup your auto-typing session
+                  {(customChannelId || selectedChannel) && (
+                    <div className="mt-2 p-2 bg-slate-700/50 rounded text-sm">
+                      <span className="text-slate-300">Target Channel: </span>
+                      <span className="text-white font-medium">
+                        {customChannelId ? 
+                          (extractChannelId(customChannelId) || customChannelId) : 
+                          `#${mockData.channels.find(c => c.id === selectedChannel)?.name || selectedChannel}`
+                        }
+                      </span>
+                    </div>
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
