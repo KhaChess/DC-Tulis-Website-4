@@ -191,6 +191,14 @@ const Dashboard = () => {
                 </CardTitle>
                 <CardDescription className="text-slate-400">
                   Setup your auto-typing session
+                  {selectedChannel && (
+                    <div className="mt-2 p-2 bg-slate-700/50 rounded text-sm">
+                      <span className="text-slate-300">Target: </span>
+                      <span className="text-white font-medium">
+                        #{mockData.channels.find(c => c.id === selectedChannel)?.name}
+                      </span>
+                    </div>
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
