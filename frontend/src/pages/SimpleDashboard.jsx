@@ -37,6 +37,16 @@ const SimpleDashboard = () => {
   useEffect(() => {
     console.log('SimpleDashboard component mounted');
     setSelectedChannel(mockData.channels[0]?.id || '');
+    
+    // Cleanup intervals on unmount
+    return () => {
+      if (messageIntervalRef.current) {
+        clearInterval(messageIntervalRef.current);
+      }
+      if (uptimeIntervalRef.current) {
+        clearInterval(uptimeIntervalRef.current);
+      }
+    };
   }, []);
 
   console.log('SimpleDashboard render - customChannels:', customChannels.length, 'selectedChannel:', selectedChannel);
