@@ -11,7 +11,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={<SimpleDashboard />} />
           </Routes>
         </Router>
       </div>
