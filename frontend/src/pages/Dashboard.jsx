@@ -337,17 +337,21 @@ const Dashboard = () => {
                       <div className="space-y-2">
                         <Label className="text-white font-medium">Target Discord Channel</Label>
                         <Select value={selectedChannel} onValueChange={setSelectedChannel}>
-                          <SelectTrigger className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600">
+                          <SelectTrigger className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600 min-h-[40px]">
                             <SelectValue placeholder="Pilih Discord channel..." />
                           </SelectTrigger>
-                          <SelectContent className="bg-slate-700 border-slate-600">
+                          <SelectContent 
+                            className="bg-slate-700 border-slate-600 max-h-[200px] overflow-y-auto"
+                            position="popper"
+                            sideOffset={4}
+                          >
                             {mockData.channels.map((channel) => (
                               <SelectItem 
-                                key={channel.id} 
+                                key={`channel-${channel.id}`}
                                 value={channel.id} 
-                                className="text-white hover:bg-slate-600 focus:bg-slate-600"
+                                className="text-white hover:bg-slate-600 focus:bg-slate-600 min-h-[36px]"
                               >
-                                <div className="flex flex-col">
+                                <div className="flex flex-col py-1">
                                   <span>#{channel.name}</span>
                                   <span className="text-xs text-slate-400">{channel.server}</span>
                                 </div>
