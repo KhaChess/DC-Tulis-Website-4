@@ -196,20 +196,45 @@ const SimpleDashboard = () => {
                 </div>
 
                 {/* Channel Selection */}
-                <div className="space-y-2">
-                  <Label className="text-white">Discord Channel</Label>
-                  <select 
-                    value={selectedChannel} 
-                    onChange={(e) => setSelectedChannel(e.target.value)}
-                    className="w-full bg-slate-700 border border-slate-600 text-white rounded-md px-3 py-2"
-                  >
-                    <option value="">Select a channel...</option>
-                    {mockData.channels.map((channel) => (
-                      <option key={channel.id} value={channel.id}>
-                        #{channel.name} ({channel.server})
-                      </option>
-                    ))}
-                  </select>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">Discord Channel (Sample Channels)</Label>
+                    <select 
+                      value={selectedChannel} 
+                      onChange={(e) => setSelectedChannel(e.target.value)}
+                      className="w-full bg-slate-700 border border-slate-600 text-white rounded-md px-3 py-2"
+                    >
+                      <option value="">Select a sample channel...</option>
+                      {mockData.channels.map((channel) => (
+                        <option key={channel.id} value={channel.id}>
+                          #{channel.name} ({channel.server})
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-slate-400">
+                      Ini adalah contoh channel. Gunakan input di bawah untuk channel sesungguhnya.
+                    </p>
+                  </div>
+
+                  <div className="border-t border-slate-600 pt-4">
+                    <div className="space-y-2">
+                      <Label className="text-white font-medium">🎯 Custom Discord Channel</Label>
+                      <Input
+                        placeholder="Masukkan Channel ID atau URL Discord..."
+                        className="bg-slate-700 border border-slate-600 text-white placeholder-slate-400"
+                        onChange={(e) => setSelectedChannel(e.target.value)}
+                      />
+                      <div className="bg-slate-700/30 border border-slate-600 rounded-lg p-3">
+                        <h4 className="text-white font-medium mb-2">💡 Cara mendapatkan Channel ID:</h4>
+                        <ul className="text-sm text-slate-300 space-y-1">
+                          <li>• Buka Discord → Settings → Advanced → Enable "Developer Mode"</li>
+                          <li>• Klik kanan pada channel → "Copy Channel ID"</li>
+                          <li>• Atau salin URL channel: discord.com/channels/SERVER_ID/CHANNEL_ID</li>
+                          <li>• Contoh ID: 123456789012345678</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Timing Settings */}
