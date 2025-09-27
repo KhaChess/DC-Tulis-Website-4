@@ -96,18 +96,23 @@ const Dashboard = () => {
     });
 
     // Simulate progress
-    const interval = setInterval(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    
+    intervalRef.current = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
-          clearInterval(interval);
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
           return 100;
         }
         return prev + 1;
       });
       setStats(prev => ({
         ...prev,
-        sent: prev.sent + Math.random() > 0.8 ? 1 : 0,
-        failed: prev.failed + Math.random() > 0.95 ? 1 : 0
+        sent: prev.sent + (Math.random() > 0.8 ? 1 : 0),
+        failed: prev.failed + (Math.random() > 0.95 ? 1 : 0)
       }));
     }, 1000);
   };
