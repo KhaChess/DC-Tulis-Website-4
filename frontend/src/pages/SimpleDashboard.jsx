@@ -58,7 +58,12 @@ const SimpleDashboard = () => {
     // Check if already exists
     const exists = customChannels.some(c => c.id === extractedId);
     if (!exists) {
-      setCustomChannels(prev => [...prev, newChannel]);
+      console.log('Adding custom channel:', newChannel);
+      setCustomChannels(prev => {
+        const updated = [...prev, newChannel];
+        console.log('Updated customChannels:', updated);
+        return updated;
+      });
       toast({
         title: "Channel Added",
         description: `Custom channel ${extractedId} added to list.`,
