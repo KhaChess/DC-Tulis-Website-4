@@ -40,11 +40,27 @@ const Dashboard = () => {
   const [progress, setProgress] = useState(0);
   const [stats, setStats] = useState({ sent: 0, failed: 0, uptime: '00:00:00' });
   const [showPassword, setShowPassword] = useState(false);
+  const intervalRef = useRef(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    // Load mock data
-    setSessions(mockData.sessions);
-    setSelectedChannel(mockData.channels[0]?.id || '');
+    // Load mock data with delay to prevent ResizeObserver errors
+    const timer = setTimeout(() => {
+      setSessions(mockData.sessions);
+      setSelectedChannel(mockData.channels[0]?.id || '');
+      setIsInitialized(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Cleanup interval on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, []);
 
   const addMessage = () => {
