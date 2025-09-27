@@ -38,6 +38,28 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+class AutoTyperSession(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    channel_id: str
+    messages: List[str]
+    typing_delay: int = 1000
+    message_delay: int = 5000
+    status: str = "idle"  # idle, running, stopped, error
+    messages_sent: int = 0
+    messages_failed: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    
+class AutoTyperSessionCreate(BaseModel):
+    channel_id: str
+    messages: List[str]
+    typing_delay: int = 1000
+    message_delay: int = 5000
+
+class AutoTyperSessionUpdate(BaseModel):
+    status: Optional[str] = None
+    messages_sent: Optional[int] = None
+    messages_failed: Optional[int] = None
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
