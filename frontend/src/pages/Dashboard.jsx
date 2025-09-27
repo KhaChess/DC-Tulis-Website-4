@@ -274,19 +274,47 @@ const Dashboard = () => {
                   <TabsContent value="discord" className="space-y-4">
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label className="text-white">Discord Channel</Label>
+                        <Label className="text-white font-medium">Target Discord Channel</Label>
                         <Select value={selectedChannel} onValueChange={setSelectedChannel}>
-                          <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                            <SelectValue placeholder="Select channel" />
+                          <SelectTrigger className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600">
+                            <SelectValue placeholder="Pilih Discord channel..." />
                           </SelectTrigger>
                           <SelectContent className="bg-slate-700 border-slate-600">
                             {mockData.channels.map((channel) => (
-                              <SelectItem key={channel.id} value={channel.id} className="text-white hover:bg-slate-600">
+                              <SelectItem 
+                                key={channel.id} 
+                                value={channel.id} 
+                                className="text-white hover:bg-slate-600 focus:bg-slate-600"
+                              >
                                 #{channel.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
+                        <p className="text-sm text-slate-400">
+                          Pilih channel Discord dimana pesan akan dikirim secara otomatis
+                        </p>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-white font-medium">Server/Guild</Label>
+                        <Input
+                          placeholder="Nama server Discord (opsional)"
+                          className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
+                        />
+                        <p className="text-sm text-slate-400">
+                          Nama server Discord untuk identifikasi lebih mudah
+                        </p>
+                      </div>
+                      
+                      <div className="bg-slate-700/30 border border-slate-600 rounded-lg p-4">
+                        <h4 className="text-white font-medium mb-2">ℹ️ Catatan Penting:</h4>
+                        <ul className="text-sm text-slate-300 space-y-1">
+                          <li>• Browser automation akan membuka Discord Web</li>
+                          <li>• Anda perlu login ke Discord terlebih dahulu</li>
+                          <li>• Pastikan memiliki akses ke channel yang dipilih</li>
+                          <li>• Jangan tutup browser selama proses berjalan</li>
+                        </ul>
                       </div>
                     </div>
                   </TabsContent>
