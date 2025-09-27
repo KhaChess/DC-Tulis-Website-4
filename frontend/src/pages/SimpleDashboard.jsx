@@ -206,11 +206,27 @@ const SimpleDashboard = () => {
   const stopSession = () => {
     setIsRunning(false);
     setProgress(0);
-    setStats({ sent: 0, failed: 0, uptime: '00:00:00' });
+    setSessionStartTime(null);
+    
+    // Clear intervals
+    if (messageIntervalRef.current) {
+      clearInterval(messageIntervalRef.current);
+      messageIntervalRef.current = null;
+    }
+    if (uptimeIntervalRef.current) {
+      clearInterval(uptimeIntervalRef.current);
+      uptimeIntervalRef.current = null;
+    }
+    
     toast({
       title: "Session Stopped",
       description: "Auto-typer has been stopped.",
     });
+    
+    // Reset stats after a brief delay to show final count
+    setTimeout(() => {
+      setStats({ sent: 0, failed: 0, uptime: '00:00:00' });
+    }, 2000);
   };
 
   return (
