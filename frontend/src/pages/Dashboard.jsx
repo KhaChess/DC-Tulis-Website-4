@@ -286,7 +286,10 @@ const Dashboard = () => {
                                 value={channel.id} 
                                 className="text-white hover:bg-slate-600 focus:bg-slate-600"
                               >
-                                #{channel.name}
+                                <div className="flex flex-col">
+                                  <span>#{channel.name}</span>
+                                  <span className="text-xs text-slate-400">{channel.server}</span>
+                                </div>
                               </SelectItem>
                             ))}
                           </SelectContent>
