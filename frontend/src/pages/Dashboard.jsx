@@ -42,16 +42,25 @@ const Dashboard = () => {
   const [showPassword, setShowPassword] = useState(false);
   const intervalRef = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isComponentMounted, setIsComponentMounted] = useState(false);
 
   useEffect(() => {
+    // Mark component as mounted
+    setIsComponentMounted(true);
+    
     // Load mock data with delay to prevent ResizeObserver errors
     const timer = setTimeout(() => {
-      setSessions(mockData.sessions);
-      setSelectedChannel(mockData.channels[0]?.id || '');
-      setIsInitialized(true);
-    }, 100);
+      if (isComponentMounted) {
+        setSessions(mockData.sessions);
+        setSelectedChannel(mockData.channels[0]?.id || '');
+        setIsInitialized(true);
+      }
+    }, 200);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      setIsComponentMounted(false);
+    };
   }, []);
 
   // Cleanup interval on unmount
@@ -59,6 +68,7 @@ const Dashboard = () => {
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
   }, []);
