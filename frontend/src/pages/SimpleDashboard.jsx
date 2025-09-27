@@ -123,7 +123,7 @@ const SimpleDashboard = () => {
     return null;
   };
 
-  const startSession = () => {
+  const startSession = async () => {
     const channelId = customChannelId || selectedChannel;
     const extractedId = extractChannelId(channelId);
     
@@ -145,71 +145,96 @@ const SimpleDashboard = () => {
       return;
     }
 
-    // Start session
-    setIsRunning(true);
-    setProgress(0);
-    setSessionStartTime(Date.now());
-    setStats({ sent: 0, failed: 0, uptime: '00:00:00' });
-    
-    const channelDisplay = extractedId || selectedChannel;
-    toast({
-      title: "Session Started",
-      description: `Discord auto-typer started for channel: ${channelDisplay}`,
-    });
+    try {
+      // Start real browser automation session
+      setIsRunning(true);
+      setProgress(0);
+      setSessionStartTime(Date.now());
+      setStats({ sent: 0, failed: 0, uptime: '00:00:00' });
+      
+      const channelDisplay = extractedId || selectedChannel;
+      
+      // Call backend API to start browser automation
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auto-typer/start`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          channel_id: channelDisplay,
+          messages: messageList.filter(msg => msg.trim()),
+          typing_delay: typingDelay,
+          message_delay: messageDelay
+        })
+      });
 
-    // Start uptime counter
-    const startTime = Date.now();
-    uptimeIntervalRef.current = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const hours = Math.floor(elapsed / 3600000);
-      const minutes = Math.floor((elapsed % 3600000) / 60000);
-      const seconds = Math.floor((elapsed % 60000) / 1000);
-      setStats(prev => ({
-        ...prev,
-        uptime: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-      }));
-    }, 1000);
+      if (!response.ok) {
+        throw new Error(`Failed to start session: ${response.status}`);
+      }
 
-    // Start message sending simulation
-    let messageIndex = 0;
-    messageIntervalRef.current = setInterval(() => {
-      const validMessages = messageList.filter(msg => msg.trim());
-      if (validMessages.length > 0) {
-        const currentMessage = validMessages[messageIndex % validMessages.length];
-        
-        // Simulate sending message (90% success rate)
-        const isSuccess = Math.random() > 0.1;
-        
+      const sessionData = await response.json();
+      setSessionStartTime(sessionData.id);  // Store session ID in sessionStartTime for now
+      
+      toast({
+        title: "Browser Session Started",
+        description: `Opening Discord in browser for channel: ${channelDisplay}`,
+      });
+
+      // Start status polling
+      const startTime = Date.now();
+      uptimeIntervalRef.current = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const hours = Math.floor(elapsed / 3600000);
+        const minutes = Math.floor((elapsed % 3600000) / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
         setStats(prev => ({
           ...prev,
-          sent: isSuccess ? prev.sent + 1 : prev.sent,
-          failed: isSuccess ? prev.failed : prev.failed + 1
+          uptime: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
         }));
+      }, 1000);
 
-        // Update progress
-        setProgress(prev => {
-          const newProgress = prev + (100 / validMessages.length);
-          return newProgress > 100 ? 100 : newProgress;
-        });
-
-        messageIndex++;
-        
-        console.log(`${isSuccess ? '✅' : '❌'} ${isSuccess ? 'Sent' : 'Failed'}: "${currentMessage}" to channel ${channelDisplay}`);
-        
-        if (isSuccess) {
-          toast({
-            title: "Message Sent",
-            description: `"${currentMessage.substring(0, 30)}${currentMessage.length > 30 ? '...' : ''}" sent to ${channelDisplay}`,
-          });
-        } else {
-          toast({
-            title: "Message Failed",
-            description: `Failed to send message to ${channelDisplay}`,
-            variant: "destructive"
-          });
+      // Poll session status from backend
+      messageIntervalRef.current = setInterval(async () => {
+        try {
+          const statusResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auto-typer/${sessionData.id}/status`);
+          if (statusResponse.ok) {
+            const status = await statusResponse.json();
+            setStats(prev => ({
+              ...prev,
+              sent: status.messages_sent || 0,
+              failed: status.messages_failed || 0
+            }));
+            
+            // Update progress based on messages sent
+            const totalMessages = messageList.filter(msg => msg.trim()).length;
+            if (totalMessages > 0) {
+              setProgress((status.messages_sent || 0) * 10); // Show progress
+            }
+            
+            // Handle status changes
+            if (status.status === 'error') {
+              toast({
+                title: "Session Error",
+                description: status.error || "An error occurred during automation",
+                variant: "destructive"
+              });
+              stopSession();
+            }
+          }
+        } catch (error) {
+          console.error('Error polling session status:', error);
         }
-      }
-    }, messageDelay);
+      }, 2000); // Poll every 2 seconds
+
+    } catch (error) {
+      console.error('Error starting session:', error);
+      toast({
+        title: "Error",
+        description: "Failed to start browser automation session",
+        variant: "destructive"
+      });
+      setIsRunning(false);
+    }
   };
 
   const stopSession = () => {
