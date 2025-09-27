@@ -303,8 +303,6 @@ const SimpleDashboard = () => {
                           </optgroup>
                         );
                       })()}
-                        </optgroup>
-                      )}
                       
                       {/* Sample Channels */}
                       <optgroup label="📋 Sample Channels">
