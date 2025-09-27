@@ -329,7 +329,10 @@ const SimpleDashboard = () => {
                           className="bg-slate-700 border border-slate-600 text-white placeholder-slate-400 flex-1"
                         />
                         <Button
-                          onClick={addCustomChannel}
+                          onClick={() => {
+                            console.log('Add button clicked! customChannelId:', customChannelId);
+                            addCustomChannel();
+                          }}
                           variant="outline"
                           className="bg-blue-600/20 border-blue-600 text-blue-400 hover:bg-blue-600/30"
                         >
