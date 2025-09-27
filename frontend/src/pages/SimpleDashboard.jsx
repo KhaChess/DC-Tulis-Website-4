@@ -49,11 +49,41 @@ const SimpleDashboard = () => {
     setMessageList(newList);
   };
 
+  // Helper function to extract channel ID from URL
+  const extractChannelId = (input) => {
+    if (!input) return null;
+    
+    // If it's already a channel ID (numbers only)
+    if (/^\d{17,19}$/.test(input.trim())) {
+      return input.trim();
+    }
+    
+    // Extract from Discord URL
+    const urlMatch = input.match(/discord\.com\/channels\/\d+\/(\d+)/);
+    if (urlMatch) {
+      return urlMatch[1];
+    }
+    
+    return null;
+  };
+
   const startSession = () => {
-    if (!selectedChannel || messageList.every(msg => !msg.trim())) {
+    const channelId = customChannelId || selectedChannel;
+    const extractedId = extractChannelId(channelId);
+    
+    if (!channelId || messageList.every(msg => !msg.trim())) {
       toast({
         title: "Validation Error",
-        description: "Please select a channel and add at least one message.",
+        description: "Please select a channel/input Channel ID and add at least one message.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (customChannelId && !extractedId) {
+      toast({
+        title: "Invalid Channel ID",
+        description: "Please enter a valid Discord Channel ID or URL.",
         variant: "destructive"
       });
       return;
@@ -61,9 +91,11 @@ const SimpleDashboard = () => {
 
     setIsRunning(true);
     setProgress(0);
+    
+    const channelDisplay = extractedId || selectedChannel;
     toast({
       title: "Session Started",
-      description: "Discord auto-typer is now running...",
+      description: `Discord auto-typer started for channel: ${channelDisplay}`,
     });
   };
 
