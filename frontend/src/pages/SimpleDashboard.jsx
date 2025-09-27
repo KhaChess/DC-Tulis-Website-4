@@ -31,8 +31,8 @@ const SimpleDashboard = () => {
   const [stats, setStats] = useState({ sent: 0, failed: 0, uptime: '00:00:00' });
   const [customChannels, setCustomChannels] = useState([]);
   const [sessionStartTime, setSessionStartTime] = useState(null);
-  const [messageInterval, setMessageInterval] = useState(null);
-  const [uptimeInterval, setUptimeInterval] = useState(null);
+  const messageIntervalRef = useRef(null);
+  const uptimeIntervalRef = useRef(null);
 
   useEffect(() => {
     console.log('SimpleDashboard component mounted');
