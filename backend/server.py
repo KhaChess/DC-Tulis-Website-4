@@ -300,7 +300,7 @@ async def create_discord_channel(channel_create: DiscordChannelCreate):
         # Check if channel already exists
         existing = await db.discord_channels.find_one({"channel_id": channel_create.channel_id})
         if existing:
-            return {"error": "Channel already exists in saved list"}
+            raise HTTPException(status_code=400, detail="Channel already exists in saved list")
         
         # Create new channel record
         channel = DiscordChannel(**channel_create.dict())
