@@ -1,0 +1,94 @@
+{
+  "summary": {
+    "passed": 2,
+    "total": 11,
+    "success_rate": 0.18181818181818182
+  },
+  "results": [
+    {
+      "test": "API Health Check",
+      "success": false,
+      "message": "API returned status: 502",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:17:47.587846"
+    },
+    {
+      "test": "Get Channels (Empty)",
+      "success": false,
+      "message": "HTTP 502: ",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:17:48.124402"
+    },
+    {
+      "test": "Create Channel",
+      "success": false,
+      "message": "HTTP 502: ",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:17:51.390398"
+    },
+    {
+      "test": "Get Channels (With Data)",
+      "success": false,
+      "message": "HTTP 502: ",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:17:51.927069"
+    },
+    {
+      "test": "Search Functionality",
+      "success": false,
+      "message": "HTTP 502: ",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:17:52.462701"
+    },
+    {
+      "test": "Category Filtering",
+      "success": false,
+      "message": "HTTP 502: ",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:17:53.013649"
+    },
+    {
+      "test": "Update Channel",
+      "success": false,
+      "message": "No channels available to update",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:17:53.514284"
+    },
+    {
+      "test": "Get Categories",
+      "success": false,
+      "message": "Request failed: HTTPSConnectionPool(host='discord-channel-1.preview.emergentagent.com', port=443): Read timed out. (read timeout=10)",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:18:04.052930"
+    },
+    {
+      "test": "Duplicate Channel Prevention",
+      "success": true,
+      "message": "Correctly returned HTTP error: 502",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:18:04.603661"
+    },
+    {
+      "test": "Error Handling (Update)",
+      "success": true,
+      "message": "Correctly returned HTTP error: 502",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:18:05.137676"
+    },
+    {
+      "test": "Error Handling (Delete)",
+      "success": true,
+      "message": "Correctly returned HTTP error: 502",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:18:05.170621"
+    },
+    {
+      "test": "Delete Channel",
+      "success": false,
+      "message": "No channels available to delete",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:18:05.671314"
+    }
+  ],
+  "timestamp": "2025-09-29T09:18:06.171770"
+}
