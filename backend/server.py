@@ -283,6 +283,168 @@ async def get_auto_typer_sessions():
     
     return [AutoTyperSession(**session) for session in sessions]
 
+# Discord Channel Management API Endpoints
+@api_router.post("/channels", response_model=DiscordChannel)
+async def create_discord_channel(channel_create: DiscordChannelCreate):
+    """Add a new Discord channel to saved list"""
+    try:
+        # Check if channel already exists
+        existing = await db.discord_channels.find_one({"channel_id": channel_create.channel_id})
+        if existing:
+            return {"error": "Channel already exists in saved list"}
+        
+        # Create new channel record
+        channel = DiscordChannel(**channel_create.dict())
+        
+        # Try to fetch channel info from Discord API if token is available
+        discord_token = os.environ.get('DISCORD_BOT_TOKEN')
+        if discord_token:
+            try:
+                channel_info = await fetch_discord_channel_info(channel_create.channel_id, discord_token)
+                if channel_info:
+                    channel.channel_name = channel_info.get('name')
+                    channel.guild_id = channel_info.get('guild_id') 
+                    channel.guild_name = channel_info.get('guild_name')
+            except Exception as e:
+                logger.warning(f"Could not fetch Discord channel info: {str(e)}")
+        
+        # Save to database
+        await db.discord_channels.insert_one(channel.dict())
+        logger.info(f"Added Discord channel {channel.channel_id}")
+        return channel
+        
+    except Exception as e:
+        logger.error(f"Error creating Discord channel: {str(e)}")
+        return {"error": str(e)}
+
+@api_router.get("/channels", response_model=List[DiscordChannel])
+async def get_discord_channels(search: Optional[str] = None, category: Optional[str] = None, favorites_only: bool = False):
+    """Get all saved Discord channels with optional filtering"""
+    try:
+        # Build query
+        query = {}
+        if favorites_only:
+            query["is_favorite"] = True
+        if category:
+            query["category"] = category
+            
+        channels = await db.discord_channels.find(query).sort("created_at", -1).to_list(1000)
+        
+        # Apply search filter if provided
+        if search:
+            search_lower = search.lower()
+            channels = [
+                channel for channel in channels 
+                if (search_lower in (channel.get('channel_name', '').lower()) or
+                    search_lower in (channel.get('guild_name', '').lower()) or  
+                    search_lower in (channel.get('category', '').lower()) or
+                    search_lower in channel.get('channel_id', ''))
+            ]
+        
+        return [DiscordChannel(**channel) for channel in channels]
+        
+    except Exception as e:
+        logger.error(f"Error fetching Discord channels: {str(e)}")
+        return []
+
+@api_router.put("/channels/{channel_id}", response_model=DiscordChannel)
+async def update_discord_channel(channel_id: str, channel_update: DiscordChannelUpdate):
+    """Update a saved Discord channel"""
+    try:
+        # Find existing channel
+        existing = await db.discord_channels.find_one({"id": channel_id})
+        if not existing:
+            return {"error": "Channel not found"}
+        
+        # Prepare update data
+        update_data = channel_update.dict(exclude_unset=True)
+        update_data["updated_at"] = datetime.utcnow()
+        
+        # Update in database
+        await db.discord_channels.update_one(
+            {"id": channel_id},
+            {"$set": update_data}
+        )
+        
+        # Return updated channel
+        updated_channel = await db.discord_channels.find_one({"id": channel_id})
+        return DiscordChannel(**updated_channel)
+        
+    except Exception as e:
+        logger.error(f"Error updating Discord channel: {str(e)}")
+        return {"error": str(e)}
+
+@api_router.delete("/channels/{channel_id}")
+async def delete_discord_channel(channel_id: str):
+    """Delete a saved Discord channel"""
+    try:
+        result = await db.discord_channels.delete_one({"id": channel_id})
+        if result.deleted_count == 0:
+            return {"error": "Channel not found"}
+        
+        logger.info(f"Deleted Discord channel {channel_id}")
+        return {"message": "Channel deleted successfully"}
+        
+    except Exception as e:
+        logger.error(f"Error deleting Discord channel: {str(e)}")
+        return {"error": str(e)}
+
+@api_router.get("/channels/categories")
+async def get_channel_categories():
+    """Get all unique categories used by saved channels"""
+    try:
+        categories = await db.discord_channels.distinct("category")
+        # Filter out None/empty categories  
+        categories = [cat for cat in categories if cat and cat.strip()]
+        return {"categories": sorted(categories)}
+    except Exception as e:
+        logger.error(f"Error fetching categories: {str(e)}")
+        return {"categories": []}
+
+# Helper function to fetch Discord channel info
+async def fetch_discord_channel_info(channel_id: str, bot_token: str):
+    """Fetch channel information from Discord API"""
+    try:
+        import aiohttp
+        
+        headers = {
+            'Authorization': f'Bot {bot_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            # Get channel info
+            async with session.get(
+                f'https://discord.com/api/v10/channels/{channel_id}',
+                headers=headers
+            ) as response:
+                if response.status == 200:
+                    channel_data = await response.json()
+                    
+                    result = {
+                        'name': channel_data.get('name'),
+                        'guild_id': channel_data.get('guild_id')
+                    }
+                    
+                    # Get guild info if guild_id exists
+                    if result['guild_id']:
+                        async with session.get(
+                            f'https://discord.com/api/v10/guilds/{result["guild_id"]}',
+                            headers=headers
+                        ) as guild_response:
+                            if guild_response.status == 200:
+                                guild_data = await guild_response.json()
+                                result['guild_name'] = guild_data.get('name')
+                    
+                    return result
+                else:
+                    logger.warning(f"Discord API error {response.status} for channel {channel_id}")
+                    return None
+                    
+    except Exception as e:
+        logger.error(f"Error fetching Discord channel info: {str(e)}")
+        return None
+
 # Include the router in the main app
 app.include_router(api_router)
 
