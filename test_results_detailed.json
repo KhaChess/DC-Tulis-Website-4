@@ -1,8 +1,8 @@
 {
   "summary": {
-    "passed": 10,
+    "passed": 7,
     "total": 11,
-    "success_rate": 0.9090909090909091
+    "success_rate": 0.6363636363636364
   },
   "results": [
     {
@@ -10,105 +10,85 @@
       "success": true,
       "message": "API is accessible - Status: 200",
       "response_data": null,
-      "timestamp": "2025-09-29T09:21:25.181365"
+      "timestamp": "2025-09-29T09:24:41.945080"
     },
     {
       "test": "Get Channels (Empty)",
       "success": true,
       "message": "Retrieved 0 channels",
       "response_data": null,
-      "timestamp": "2025-09-29T09:21:25.725934"
+      "timestamp": "2025-09-29T09:24:42.482946"
     },
     {
       "test": "Create Channel",
-      "success": true,
-      "message": "Channel created successfully with ID: 93f44a9a-d546-45a6-a220-bda9762c1a9f",
-      "response_data": {
-        "id": "93f44a9a-d546-45a6-a220-bda9762c1a9f",
-        "channel_id": "123456789012345678",
-        "channel_name": null,
-        "guild_id": null,
-        "guild_name": null,
-        "category": "Test Category",
-        "is_favorite": false,
-        "created_at": "2025-09-29T09:21:26.262783",
-        "updated_at": "2025-09-29T09:21:26.262784"
-      },
-      "timestamp": "2025-09-29T09:21:26.282148"
+      "success": false,
+      "message": "Request failed: HTTPSConnectionPool(host='discord-channel-1.preview.emergentagent.com', port=443): Read timed out. (read timeout=10)",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:24:53.022199"
     },
     {
       "test": "Get Channels (With Data)",
-      "success": true,
-      "message": "Retrieved 1 channels, test channel found",
+      "success": false,
+      "message": "Request failed: HTTPSConnectionPool(host='discord-channel-1.preview.emergentagent.com', port=443): Read timed out. (read timeout=10)",
       "response_data": null,
-      "timestamp": "2025-09-29T09:21:26.821300"
+      "timestamp": "2025-09-29T09:25:03.576418"
     },
     {
       "test": "Search Functionality",
-      "success": false,
-      "message": "Search did not return expected channel",
+      "success": true,
+      "message": "Search by channel ID returned 1 results",
       "response_data": null,
-      "timestamp": "2025-09-29T09:21:27.358228"
+      "timestamp": "2025-09-29T09:25:04.177964"
     },
     {
       "test": "Category Filtering",
       "success": true,
       "message": "Category filter returned 1 channels",
       "response_data": null,
-      "timestamp": "2025-09-29T09:21:27.899812"
+      "timestamp": "2025-09-29T09:25:04.719365"
     },
     {
       "test": "Update Channel",
-      "success": true,
-      "message": "Channel updated successfully",
-      "response_data": {
-        "id": "93f44a9a-d546-45a6-a220-bda9762c1a9f",
-        "channel_id": "123456789012345678",
-        "channel_name": "Updated Test Channel",
-        "guild_id": null,
-        "guild_name": null,
-        "category": "Updated Category",
-        "is_favorite": true,
-        "created_at": "2025-09-29T09:21:26.262000",
-        "updated_at": "2025-09-29T09:21:28.436000"
-      },
-      "timestamp": "2025-09-29T09:21:28.442996"
+      "success": false,
+      "message": "No channels available to update",
+      "response_data": null,
+      "timestamp": "2025-09-29T09:25:05.220029"
     },
     {
       "test": "Get Categories",
       "success": true,
-      "message": "Retrieved 1 categories: ['Updated Category']",
+      "message": "Retrieved 1 categories: ['Test Category']",
       "response_data": null,
-      "timestamp": "2025-09-29T09:21:28.982978"
+      "timestamp": "2025-09-29T09:25:05.755122"
     },
     {
       "test": "Duplicate Channel Prevention",
       "success": true,
       "message": "Correctly returned HTTP error: 500",
       "response_data": null,
-      "timestamp": "2025-09-29T09:21:29.525162"
+      "timestamp": "2025-09-29T09:25:06.291669"
     },
     {
       "test": "Error Handling (Update)",
       "success": true,
       "message": "Correctly returned HTTP error: 500",
       "response_data": null,
-      "timestamp": "2025-09-29T09:21:30.062019"
+      "timestamp": "2025-09-29T09:25:06.832754"
     },
     {
       "test": "Error Handling (Delete)",
       "success": true,
       "message": "Correctly returned error: Channel not found",
       "response_data": null,
-      "timestamp": "2025-09-29T09:21:30.100477"
+      "timestamp": "2025-09-29T09:25:06.870425"
     },
     {
       "test": "Delete Channel",
-      "success": true,
-      "message": "Channel deleted successfully",
+      "success": false,
+      "message": "No channels available to delete",
       "response_data": null,
-      "timestamp": "2025-09-29T09:21:30.731634"
+      "timestamp": "2025-09-29T09:25:07.370992"
     }
   ],
-  "timestamp": "2025-09-29T09:21:31.233338"
+  "timestamp": "2025-09-29T09:25:07.871451"
 }
