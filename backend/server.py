@@ -389,7 +389,7 @@ async def delete_discord_channel(channel_id: str):
     try:
         result = await db.discord_channels.delete_one({"id": channel_id})
         if result.deleted_count == 0:
-            return {"error": "Channel not found"}
+            raise HTTPException(status_code=404, detail="Channel not found")
         
         logger.info(f"Deleted Discord channel {channel_id}")
         return {"message": "Channel deleted successfully"}
