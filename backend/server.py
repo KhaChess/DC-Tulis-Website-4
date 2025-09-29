@@ -344,10 +344,10 @@ async def get_discord_channels(search: Optional[str] = None, category: Optional[
             search_lower = search.lower()
             channels = [
                 channel for channel in channels 
-                if (search_lower in (channel.get('channel_name', '').lower()) or
-                    search_lower in (channel.get('guild_name', '').lower()) or  
-                    search_lower in (channel.get('category', '').lower()) or
-                    search_lower in channel.get('channel_id', '').lower())
+                if (search_lower in (channel.get('channel_name') or '').lower() or
+                    search_lower in (channel.get('guild_name') or '').lower() or  
+                    search_lower in (channel.get('category') or '').lower() or
+                    search_lower in (channel.get('channel_id') or '').lower())
             ]
         
         return [DiscordChannel(**channel) for channel in channels]
