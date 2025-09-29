@@ -363,7 +363,7 @@ async def update_discord_channel(channel_id: str, channel_update: DiscordChannel
         # Find existing channel
         existing = await db.discord_channels.find_one({"id": channel_id})
         if not existing:
-            return {"error": "Channel not found"}
+            raise HTTPException(status_code=404, detail="Channel not found")
         
         # Prepare update data
         update_data = channel_update.dict(exclude_unset=True)
