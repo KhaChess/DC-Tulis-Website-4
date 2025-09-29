@@ -324,7 +324,7 @@ async def create_discord_channel(channel_create: DiscordChannelCreate):
         
     except Exception as e:
         logger.error(f"Error creating Discord channel: {str(e)}")
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/channels", response_model=List[DiscordChannel])
 async def get_discord_channels(search: Optional[str] = None, category: Optional[str] = None, favorites_only: bool = False):
