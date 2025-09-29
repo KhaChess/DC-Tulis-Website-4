@@ -170,6 +170,28 @@ class AutoTyperSessionUpdate(BaseModel):
     messages_sent: Optional[int] = None
     messages_failed: Optional[int] = None
 
+# Discord Channel Models
+class DiscordChannel(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    channel_id: str  # Discord Channel ID
+    channel_name: Optional[str] = None
+    guild_id: Optional[str] = None
+    guild_name: Optional[str] = None
+    category: Optional[str] = None  # Custom category set by user
+    is_favorite: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    
+class DiscordChannelCreate(BaseModel):
+    channel_id: str
+    category: Optional[str] = None
+    is_favorite: bool = False
+
+class DiscordChannelUpdate(BaseModel):
+    channel_name: Optional[str] = None
+    category: Optional[str] = None  
+    is_favorite: Optional[bool] = None
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
