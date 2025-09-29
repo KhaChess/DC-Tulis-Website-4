@@ -396,7 +396,7 @@ async def delete_discord_channel(channel_id: str):
         
     except Exception as e:
         logger.error(f"Error deleting Discord channel: {str(e)}")
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/channels/categories")
 async def get_channel_categories():
