@@ -381,7 +381,7 @@ async def update_discord_channel(channel_id: str, channel_update: DiscordChannel
         
     except Exception as e:
         logger.error(f"Error updating Discord channel: {str(e)}")
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.delete("/channels/{channel_id}")
 async def delete_discord_channel(channel_id: str):
