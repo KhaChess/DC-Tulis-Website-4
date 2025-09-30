@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Discord Channel Management
-Tests all CRUD operations and Discord API integration
+Enhanced Backend API Testing for Discord Autotyper with WebSocket and Real-time Features
+Tests WebSocket connections, session management, pause/resume, retry mechanisms, and real-time updates
 """
 
 import requests
 import json
 import time
+import asyncio
+import websockets
+import threading
 from datetime import datetime
+from typing import Dict, List, Any
 
 # Configuration
 BASE_URL = "https://chatflow-automation.preview.emergentagent.com/api"
+WS_URL = "wss://chatflow-automation.preview.emergentagent.com/api/ws"
 HEADERS = {"Content-Type": "application/json"}
 
 # Test data
