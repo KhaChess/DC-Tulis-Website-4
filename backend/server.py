@@ -193,7 +193,7 @@ async def discord_automation(session_id: str, session_data: AutoTyperSession):
             try:
                 await page.wait_for_selector('[data-list-id="channels"]', timeout=login_timeout * 1000)
                 logger.info(f"Discord interface detected for session {session_id}")
-            except:
+            except Exception:
                 error_msg = "Discord login timeout - please login manually"
                 await handle_session_error(session_id, error_msg, can_retry=True)
                 return
@@ -208,7 +208,7 @@ async def discord_automation(session_id: str, session_data: AutoTyperSession):
             # Wait for message input to be visible
             try:
                 await page.wait_for_selector('[data-slate-editor="true"]', timeout=30000)
-            except:
+            except Exception:
                 error_msg = "Could not find message input - check channel permissions"
                 await handle_session_error(session_id, error_msg, can_retry=True)
                 return
