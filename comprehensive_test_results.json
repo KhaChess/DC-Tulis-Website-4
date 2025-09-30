@@ -1,0 +1,225 @@
+{
+  "summary": {
+    "total_passed": 20,
+    "total_tests": 21,
+    "success_rate": 0.9523809523809523,
+    "autotyper_results": {
+      "passed": 9,
+      "total": 10
+    },
+    "channel_results": {
+      "passed": 11,
+      "total": 11
+    }
+  },
+  "autotyper_tests": [
+    {
+      "test": "API Health Check",
+      "success": true,
+      "message": "API is accessible - Status: 200",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:38.832530"
+    },
+    {
+      "test": "Enhanced Session Creation",
+      "success": true,
+      "message": "Enhanced session created with ID: e13bc596-b9d5-48a7-ac9c-0872ed4a68ca",
+      "response_data": {
+        "id": "e13bc596-b9d5-48a7-ac9c-0872ed4a68ca",
+        "channel_id": "123456789012345678",
+        "messages": [
+          "Hello, this is test message 1",
+          "This is test message 2 with more content",
+          "Final test message 3"
+        ],
+        "typing_delay": 100,
+        "message_delay": 1000,
+        "status": "idle",
+        "messages_sent": 0,
+        "messages_failed": 0,
+        "current_message_index": 0,
+        "current_message": null,
+        "is_typing": false,
+        "typing_progress": 0.0,
+        "failed_messages": [],
+        "last_error": null,
+        "retry_count": 0,
+        "can_resume": false,
+        "created_at": "2025-09-30T10:53:39.372667",
+        "paused_at": null,
+        "resumed_at": null
+      },
+      "timestamp": "2025-09-30T10:53:39.405261"
+    },
+    {
+      "test": "Session Status",
+      "success": false,
+      "message": "HTTP 500: Internal Server Error",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:39.943540"
+    },
+    {
+      "test": "Pause Functionality",
+      "success": true,
+      "message": "Correctly handled non-running session: Session is not running",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:40.483704"
+    },
+    {
+      "test": "Resume Functionality",
+      "success": true,
+      "message": "Correctly handled non-paused session: Session is not paused",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:41.021743"
+    },
+    {
+      "test": "Manual Retry",
+      "success": true,
+      "message": "Correctly handled no failed messages: No failed messages to retry",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:41.559982"
+    },
+    {
+      "test": "Stop Functionality",
+      "success": true,
+      "message": "Session stopped successfully",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:42.094783"
+    },
+    {
+      "test": "Get All Sessions",
+      "success": true,
+      "message": "Retrieved 1 sessions, test session found",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:42.635964"
+    },
+    {
+      "test": "WebSocket Connection",
+      "success": true,
+      "message": "WebSocket connected successfully to session e13bc596-b9d5-48a7-ac9c-0872ed4a68ca",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:43.188020"
+    },
+    {
+      "test": "WebSocket Ping-Pong",
+      "success": true,
+      "message": "WebSocket ping-pong working correctly",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:43.191236"
+    },
+    {
+      "test": "WebSocket Real-time Updates",
+      "success": true,
+      "message": "No immediate updates (expected for idle session)",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:48.733700"
+    }
+  ],
+  "channel_tests": [
+    {
+      "test": "API Health Check",
+      "success": true,
+      "message": "API is accessible - Status: 200",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:49.340520"
+    },
+    {
+      "test": "Get Channels (Empty)",
+      "success": true,
+      "message": "Retrieved 0 channels",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:49.877777"
+    },
+    {
+      "test": "Create Channel",
+      "success": true,
+      "message": "Channel created successfully with ID: a34e74f8-87cb-4801-87cc-a194c8131fbb",
+      "response_data": {
+        "id": "a34e74f8-87cb-4801-87cc-a194c8131fbb",
+        "channel_id": "123456789012345678",
+        "channel_name": null,
+        "guild_id": null,
+        "guild_name": null,
+        "category": "Test Category",
+        "is_favorite": false,
+        "created_at": "2025-09-30T10:53:50.413586",
+        "updated_at": "2025-09-30T10:53:50.413588"
+      },
+      "timestamp": "2025-09-30T10:53:50.440034"
+    },
+    {
+      "test": "Get Channels (With Data)",
+      "success": true,
+      "message": "Retrieved 1 channels, test channel found",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:50.977749"
+    },
+    {
+      "test": "Search Functionality",
+      "success": true,
+      "message": "Search by channel ID returned 1 results",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:51.514359"
+    },
+    {
+      "test": "Category Filtering",
+      "success": true,
+      "message": "Category filter returned 1 channels",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:52.052148"
+    },
+    {
+      "test": "Update Channel",
+      "success": true,
+      "message": "Channel updated successfully",
+      "response_data": {
+        "id": "a34e74f8-87cb-4801-87cc-a194c8131fbb",
+        "channel_id": "123456789012345678",
+        "channel_name": "Updated Test Channel",
+        "guild_id": null,
+        "guild_name": null,
+        "category": "Updated Category",
+        "is_favorite": true,
+        "created_at": "2025-09-30T10:53:50.413000",
+        "updated_at": "2025-09-30T10:53:52.588000"
+      },
+      "timestamp": "2025-09-30T10:53:52.592903"
+    },
+    {
+      "test": "Get Categories",
+      "success": true,
+      "message": "Retrieved 1 categories: ['Updated Category']",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:53.197482"
+    },
+    {
+      "test": "Duplicate Channel Prevention",
+      "success": true,
+      "message": "Correctly returned HTTP error: 500",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:53.736969"
+    },
+    {
+      "test": "Error Handling (Update)",
+      "success": true,
+      "message": "Correctly returned HTTP error: 500",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:54.275400"
+    },
+    {
+      "test": "Error Handling (Delete)",
+      "success": true,
+      "message": "Correctly returned HTTP error: 500",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:54.331836"
+    },
+    {
+      "test": "Delete Channel",
+      "success": true,
+      "message": "Channel deleted successfully",
+      "response_data": null,
+      "timestamp": "2025-09-30T10:53:54.905165"
+    }
+  ],
+  "timestamp": "2025-09-30T10:53:55.406309"
+}
