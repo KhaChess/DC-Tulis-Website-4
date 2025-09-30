@@ -610,6 +610,10 @@ async def get_auto_typer_session_status(session_id: str):
     if not session_data:
         return {"error": "Session not found"}
     
+    # Remove MongoDB ObjectId to avoid JSON serialization issues
+    if "_id" in session_data:
+        del session_data["_id"]
+    
     # Merge with active session data if available
     if session_id in active_sessions:
         for key in ['messages_sent', 'messages_failed', 'status', 'current_message_index', 
