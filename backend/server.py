@@ -162,9 +162,10 @@ class DiscordChannelUpdate(BaseModel):
     category: Optional[str] = None  
     is_favorite: Optional[bool] = None
 
-# Discord automation function
+# Enhanced Discord automation function with real-time updates
 async def discord_automation(session_id: str, session_data: AutoTyperSession):
-    """Browser automation for Discord message sending"""
+    """Enhanced browser automation for Discord message sending with real-time updates"""
+    browser = None
     try:
         logger.info(f"Starting Discord automation for session {session_id}")
         
@@ -181,94 +182,201 @@ async def discord_automation(session_id: str, session_data: AutoTyperSession):
             # Navigate to Discord
             await page.goto('https://discord.com/channels/@me', wait_until='networkidle')
             
-            # Update session status
-            active_sessions[session_id]['status'] = 'waiting_for_login'
-            await db.auto_typer_sessions.update_one(
-                {"id": session_id},
-                {"$set": {"status": "waiting_for_login"}}
-            )
+            # Update session status and notify via WebSocket
+            await update_session_status(session_id, {
+                'status': 'waiting_for_login',
+                'current_message': 'Waiting for Discord login...'
+            })
             
-            # Wait for user to login (check for presence of Discord interface)
+            # Wait for user to login
             login_timeout = 60  # 60 seconds timeout for login
             try:
-                # Wait for Discord app to load (look for main navigation or channel list)
                 await page.wait_for_selector('[data-list-id="channels"]', timeout=login_timeout * 1000)
                 logger.info(f"Discord interface detected for session {session_id}")
             except:
-                logger.error(f"Discord login timeout for session {session_id}")
-                active_sessions[session_id]['status'] = 'error'
-                await db.auto_typer_sessions.update_one(
-                    {"id": session_id},
-                    {"$set": {"status": "error", "error": "Login timeout"}}
-                )
-                await browser.close()
+                error_msg = "Discord login timeout - please login manually"
+                await handle_session_error(session_id, error_msg, can_retry=True)
                 return
-            
-            # Navigate to the specific channel if it's a valid Discord URL or construct URL
+
+            # Navigate to the specific channel
             channel_url = f"https://discord.com/channels/@me/{session_data.channel_id}"
             if session_data.channel_id.startswith('https://discord.com'):
                 channel_url = session_data.channel_id
-            
+
             await page.goto(channel_url, wait_until='networkidle')
-            
+
             # Wait for message input to be visible
-            await page.wait_for_selector('[data-slate-editor="true"]', timeout=30000)
-            
-            active_sessions[session_id]['status'] = 'running'
-            await db.auto_typer_sessions.update_one(
-                {"id": session_id},
-                {"$set": {"status": "running"}}
-            )
-            
-            message_index = 0
+            try:
+                await page.wait_for_selector('[data-slate-editor="true"]', timeout=30000)
+            except:
+                error_msg = "Could not find message input - check channel permissions"
+                await handle_session_error(session_id, error_msg, can_retry=True)
+                return
+
+            await update_session_status(session_id, {
+                'status': 'running',
+                'current_message': 'Session started successfully'
+            })
+
+            # Main message sending loop
+            message_index = active_sessions[session_id].get('current_message_index', 0)
+            messages = session_data.messages
+
             while (active_sessions[session_id]['status'] == 'running' and 
-                   message_index < len(session_data.messages) * 10):  # Limit iterations
+                   message_index < len(messages)):
+
+                # Check for pause state
+                if active_sessions[session_id]['status'] == 'paused':
+                    await update_session_status(session_id, {
+                        'status': 'paused',
+                        'current_message': 'Session paused',
+                        'can_resume': True,
+                        'current_message_index': message_index
+                    })
+                    
+                    # Wait for resume or stop
+                    while active_sessions[session_id]['status'] == 'paused':
+                        await asyncio.sleep(1)
+                    
+                    # Check if resumed or stopped
+                    if active_sessions[session_id]['status'] != 'running':
+                        break
+
+                message = messages[message_index]
                 
-                try:
-                    message = session_data.messages[message_index % len(session_data.messages)]
-                    
-                    # Find and click the message input
-                    message_input = await page.wait_for_selector('[data-slate-editor="true"]', timeout=10000)
-                    await message_input.click()
-                    
-                    # Type the message with delay
-                    await page.keyboard.type(message, delay=session_data.typing_delay // len(message))
-                    
-                    # Send the message
-                    await page.keyboard.press('Enter')
-                    
+                # Update current message being processed
+                await update_session_status(session_id, {
+                    'current_message': message,
+                    'current_message_index': message_index,
+                    'is_typing': True,
+                    'typing_progress': 0.0
+                })
+
+                success = await send_message_with_typing(page, session_id, message, session_data.typing_delay)
+                
+                if success:
                     # Update success count
                     active_sessions[session_id]['messages_sent'] += 1
-                    await db.auto_typer_sessions.update_one(
-                        {"id": session_id},
-                        {"$set": {"messages_sent": active_sessions[session_id]['messages_sent']}}
-                    )
-                    
+                    await update_session_status(session_id, {
+                        'messages_sent': active_sessions[session_id]['messages_sent'],
+                        'is_typing': False,
+                        'typing_progress': 100.0
+                    })
                     logger.info(f"Message sent in session {session_id}: {message[:50]}...")
-                    
-                    # Wait before next message
-                    await asyncio.sleep(session_data.message_delay / 1000)
-                    message_index += 1
-                    
-                except Exception as e:
-                    logger.error(f"Error sending message in session {session_id}: {str(e)}")
-                    active_sessions[session_id]['messages_failed'] += 1
-                    await db.auto_typer_sessions.update_one(
-                        {"id": session_id},
-                        {"$set": {"messages_failed": active_sessions[session_id]['messages_failed']}}
-                    )
-                    await asyncio.sleep(2)  # Wait before retry
-            
-            await browser.close()
-            
+                else:
+                    # Handle failed message
+                    await handle_message_failure(session_id, message, message_index)
+
+                # Wait before next message
+                await asyncio.sleep(session_data.message_delay / 1000)
+                message_index += 1
+
+            # Session completed
+            await update_session_status(session_id, {
+                'status': 'completed',
+                'current_message': 'All messages sent successfully',
+                'is_typing': False
+            })
+
     except Exception as e:
         logger.error(f"Discord automation error for session {session_id}: {str(e)}")
-        if session_id in active_sessions:
-            active_sessions[session_id]['status'] = 'error'
+        await handle_session_error(session_id, str(e), can_retry=True)
+    finally:
+        if browser:
+            try:
+                await browser.close()
+            except:
+                pass
+
+async def send_message_with_typing(page, session_id: str, message: str, typing_delay: int):
+    """Send message with real-time typing progress"""
+    try:
+        # Find and click the message input
+        message_input = await page.wait_for_selector('[data-slate-editor="true"]', timeout=10000)
+        await message_input.click()
+
+        # Type with progress updates
+        chars_per_update = max(1, len(message) // 10)  # Update 10 times during typing
+        
+        for i, char in enumerate(message):
+            await page.keyboard.type(char, delay=typing_delay // len(message))
+            
+            # Update typing progress
+            if i % chars_per_update == 0 or i == len(message) - 1:
+                progress = ((i + 1) / len(message)) * 100
+                await manager.send_typing_update(session_id, {
+                    'typing_progress': progress,
+                    'current_char_index': i + 1,
+                    'total_chars': len(message)
+                })
+
+        # Send the message
+        await page.keyboard.press('Enter')
+        return True
+
+    except Exception as e:
+        logger.error(f"Error sending message in session {session_id}: {str(e)}")
+        return False
+
+async def update_session_status(session_id: str, update_data: dict):
+    """Update session status in database and notify via WebSocket"""
+    if session_id in active_sessions:
+        # Update active session
+        for key, value in update_data.items():
+            active_sessions[session_id][key] = value
+
+        # Update database
         await db.auto_typer_sessions.update_one(
             {"id": session_id},
-            {"$set": {"status": "error", "error": str(e)}}
+            {"$set": update_data}
         )
+
+        # Notify via WebSocket
+        await manager.broadcast_session_update(session_id, update_data)
+
+async def handle_session_error(session_id: str, error_msg: str, can_retry: bool = False):
+    """Handle session error with notification"""
+    error_data = {
+        'status': 'error',
+        'last_error': error_msg,
+        'can_resume': can_retry,
+        'retry_count': active_sessions[session_id].get('retry_count', 0),
+        'is_typing': False
+    }
+    
+    await update_session_status(session_id, error_data)
+    await manager.send_error_notification(session_id, {
+        'error': error_msg,
+        'can_retry': can_retry,
+        'session_id': session_id
+    })
+
+async def handle_message_failure(session_id: str, message: str, message_index: int):
+    """Handle individual message failure"""
+    active_sessions[session_id]['messages_failed'] += 1
+    
+    # Add to failed messages for retry
+    if 'failed_messages' not in active_sessions[session_id]:
+        active_sessions[session_id]['failed_messages'] = []
+    
+    active_sessions[session_id]['failed_messages'].append({
+        'message': message,
+        'index': message_index,
+        'timestamp': datetime.utcnow().isoformat(),
+        'error': 'Failed to send message'
+    })
+    
+    await update_session_status(session_id, {
+        'messages_failed': active_sessions[session_id]['messages_failed'],
+        'is_typing': False
+    })
+
+    # Send error notification
+    await manager.send_error_notification(session_id, {
+        'error': f'Failed to send message: {message[:50]}...',
+        'message_index': message_index,
+        'can_retry': True
+    })
 
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
