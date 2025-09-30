@@ -612,9 +612,11 @@ async def get_auto_typer_session_status(session_id: str):
     
     # Merge with active session data if available
     if session_id in active_sessions:
-        session_data['messages_sent'] = active_sessions[session_id]['messages_sent']
-        session_data['messages_failed'] = active_sessions[session_id]['messages_failed']
-        session_data['status'] = active_sessions[session_id]['status']
+        for key in ['messages_sent', 'messages_failed', 'status', 'current_message_index', 
+                   'current_message', 'is_typing', 'typing_progress', 'failed_messages',
+                   'last_error', 'retry_count', 'can_resume']:
+            if key in active_sessions[session_id]:
+                session_data[key] = active_sessions[session_id][key]
     
     return session_data
 
