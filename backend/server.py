@@ -378,6 +378,43 @@ async def handle_message_failure(session_id: str, message: str, message_index: i
         'can_retry': True
     })
 
+# WebSocket endpoint
+@api_router.websocket("/ws/{session_id}")
+async def websocket_endpoint(websocket: WebSocket, session_id: str):
+    await manager.connect(websocket, session_id)
+    try:
+        # Send initial connection confirmation
+        await manager.send_message(session_id, {
+            "type": "connection_established",
+            "session_id": session_id,
+            "message": "WebSocket connection established"
+        })
+        
+        # Keep connection alive and listen for client messages
+        while True:
+            try:
+                data = await websocket.receive_json()
+                
+                # Handle client commands
+                if data.get("action") == "ping":
+                    await manager.send_message(session_id, {"type": "pong"})
+                elif data.get("action") == "get_status":
+                    # Send current session status
+                    session = await db.auto_typer_sessions.find_one({"id": session_id})
+                    if session:
+                        await manager.broadcast_session_update(session_id, session)
+                        
+            except WebSocketDisconnect:
+                break
+            except Exception as e:
+                logger.error(f"WebSocket error for session {session_id}: {str(e)}")
+                break
+                
+    except Exception as e:
+        logger.error(f"WebSocket connection error for session {session_id}: {str(e)}")
+    finally:
+        manager.disconnect(session_id)
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
