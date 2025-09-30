@@ -628,9 +628,10 @@ async def get_auto_typer_sessions():
     # Update with active session data
     for session in sessions:
         if session['id'] in active_sessions:
-            session['messages_sent'] = active_sessions[session['id']]['messages_sent']
-            session['messages_failed'] = active_sessions[session['id']]['messages_failed']
-            session['status'] = active_sessions[session['id']]['status']
+            for key in ['messages_sent', 'messages_failed', 'status', 'current_message_index',
+                       'current_message', 'is_typing', 'typing_progress', 'can_resume']:
+                if key in active_sessions[session['id']]:
+                    session[key] = active_sessions[session['id']][key]
     
     return [AutoTyperSession(**session) for session in sessions]
 
