@@ -132,6 +132,13 @@ class AutoTyperSessionUpdate(BaseModel):
     status: Optional[str] = None
     messages_sent: Optional[int] = None
     messages_failed: Optional[int] = None
+    current_message_index: Optional[int] = None
+    current_message: Optional[str] = None
+    is_typing: Optional[bool] = None
+    typing_progress: Optional[float] = None
+    last_error: Optional[str] = None
+    retry_count: Optional[int] = None
+    can_resume: Optional[bool] = None
 
 # Discord Channel Models
 class DiscordChannel(BaseModel):
