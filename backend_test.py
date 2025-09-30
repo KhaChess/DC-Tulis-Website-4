@@ -23,6 +23,15 @@ TEST_CHANNEL_ID = "123456789012345678"  # Fake Discord channel ID
 TEST_CATEGORY = "Test Category"
 TEST_CHANNEL_NAME = "test-channel"
 
+# Enhanced test data for autotyper
+TEST_MESSAGES = [
+    "Hello, this is test message 1",
+    "This is test message 2 with more content",
+    "Final test message 3"
+]
+TEST_TYPING_DELAY = 100  # Fast typing for testing
+TEST_MESSAGE_DELAY = 1000  # 1 second between messages
+
 class DiscordChannelAPITester:
     def __init__(self):
         self.created_channels = []
