@@ -434,17 +434,25 @@ async def get_status_checks():
 
 @api_router.post("/auto-typer/start", response_model=AutoTyperSession)
 async def start_auto_typer_session(session_create: AutoTyperSessionCreate):
-    """Start a new Discord auto-typer session"""
+    """Start a new Discord auto-typer session with enhanced features"""
     session = AutoTyperSession(**session_create.dict())
     
     # Store in database
     await db.auto_typer_sessions.insert_one(session.dict())
     
-    # Initialize active session
+    # Initialize enhanced active session
     active_sessions[session.id] = {
         'status': 'starting',
         'messages_sent': 0,
         'messages_failed': 0,
+        'current_message_index': 0,
+        'current_message': None,
+        'is_typing': False,
+        'typing_progress': 0.0,
+        'failed_messages': [],
+        'last_error': None,
+        'retry_count': 0,
+        'can_resume': False,
         'task': None
     }
     
@@ -452,7 +460,7 @@ async def start_auto_typer_session(session_create: AutoTyperSessionCreate):
     task = asyncio.create_task(discord_automation(session.id, session))
     active_sessions[session.id]['task'] = task
     
-    logger.info(f"Started auto-typer session {session.id}")
+    logger.info(f"Started enhanced auto-typer session {session.id}")
     return session
 
 @api_router.post("/auto-typer/{session_id}/stop")
