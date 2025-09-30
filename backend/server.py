@@ -402,6 +402,9 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
                     # Send current session status
                     session = await db.auto_typer_sessions.find_one({"id": session_id})
                     if session:
+                        # Remove MongoDB ObjectId to avoid JSON serialization issues
+                        if "_id" in session:
+                            del session["_id"]
                         await manager.broadcast_session_update(session_id, session)
                         
             except WebSocketDisconnect:
