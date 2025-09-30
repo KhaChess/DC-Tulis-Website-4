@@ -476,6 +476,124 @@ async def stop_auto_typer_session(session_id: str):
     else:
         return {"error": "Session not found"}
 
+@api_router.post("/auto-typer/{session_id}/pause")
+async def pause_auto_typer_session(session_id: str):
+    """Pause an active auto-typer session"""
+    if session_id in active_sessions:
+        if active_sessions[session_id]['status'] == 'running':
+            active_sessions[session_id]['status'] = 'paused'
+            
+            # Update database with pause timestamp
+            await db.auto_typer_sessions.update_one(
+                {"id": session_id},
+                {"$set": {
+                    "status": "paused",
+                    "can_resume": True,
+                    "paused_at": datetime.utcnow()
+                }}
+            )
+            
+            # Notify via WebSocket
+            await manager.broadcast_session_update(session_id, {
+                "status": "paused",
+                "can_resume": True,
+                "current_message": "Session paused by user"
+            })
+            
+            logger.info(f"Paused auto-typer session {session_id}")
+            return {"message": "Session paused successfully"}
+        else:
+            return {"error": "Session is not running"}
+    else:
+        return {"error": "Session not found"}
+
+@api_router.post("/auto-typer/{session_id}/resume")
+async def resume_auto_typer_session(session_id: str):
+    """Resume a paused auto-typer session"""
+    if session_id in active_sessions:
+        if active_sessions[session_id]['status'] == 'paused':
+            active_sessions[session_id]['status'] = 'running'
+            
+            # Update database with resume timestamp
+            await db.auto_typer_sessions.update_one(
+                {"id": session_id},
+                {"$set": {
+                    "status": "running",
+                    "resumed_at": datetime.utcnow()
+                }}
+            )
+            
+            # Notify via WebSocket
+            await manager.broadcast_session_update(session_id, {
+                "status": "running",
+                "current_message": "Session resumed by user"
+            })
+            
+            logger.info(f"Resumed auto-typer session {session_id}")
+            return {"message": "Session resumed successfully"}
+        else:
+            return {"error": "Session is not paused"}
+    else:
+        # Check if session can be resumed from database
+        session_data = await db.auto_typer_sessions.find_one({"id": session_id})
+        if session_data and session_data.get('can_resume'):
+            # Reinitialize session for resume
+            active_sessions[session_id] = {
+                'status': 'running',
+                'messages_sent': session_data.get('messages_sent', 0),
+                'messages_failed': session_data.get('messages_failed', 0),
+                'current_message_index': session_data.get('current_message_index', 0),
+                'failed_messages': session_data.get('failed_messages', []),
+                'retry_count': session_data.get('retry_count', 0),
+                'task': None
+            }
+            
+            # Start automation from where it left off
+            session_obj = AutoTyperSession(**session_data)
+            task = asyncio.create_task(discord_automation(session_id, session_obj))
+            active_sessions[session_id]['task'] = task
+            
+            logger.info(f"Resumed auto-typer session {session_id} from database")
+            return {"message": "Session resumed successfully"}
+        else:
+            return {"error": "Session not found or cannot be resumed"}
+
+@api_router.post("/auto-typer/{session_id}/retry")
+async def retry_failed_messages(session_id: str):
+    """Retry failed messages for a session"""
+    if session_id not in active_sessions:
+        return {"error": "Session not found"}
+    
+    failed_messages = active_sessions[session_id].get('failed_messages', [])
+    if not failed_messages:
+        return {"error": "No failed messages to retry"}
+    
+    # Clear failed messages and reset counters
+    active_sessions[session_id]['failed_messages'] = []
+    active_sessions[session_id]['retry_count'] += 1
+    
+    # Update database
+    await db.auto_typer_sessions.update_one(
+        {"id": session_id},
+        {"$set": {
+            "retry_count": active_sessions[session_id]['retry_count'],
+            "failed_messages": []
+        }}
+    )
+    
+    # Notify via WebSocket
+    await manager.send_message(session_id, {
+        "type": "retry_initiated",
+        "session_id": session_id,
+        "data": {
+            "retry_count": active_sessions[session_id]['retry_count'],
+            "messages_to_retry": len(failed_messages)
+        }
+    })
+    
+    logger.info(f"Retrying {len(failed_messages)} failed messages for session {session_id}")
+    return {"message": f"Retrying {len(failed_messages)} failed messages"}
+
 @api_router.get("/auto-typer/{session_id}/status")
 async def get_auto_typer_session_status(session_id: str):
     """Get the current status of an auto-typer session"""
