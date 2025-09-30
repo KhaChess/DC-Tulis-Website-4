@@ -107,10 +107,20 @@ class AutoTyperSession(BaseModel):
     messages: List[str]
     typing_delay: int = 1000
     message_delay: int = 5000
-    status: str = "idle"  # idle, running, stopped, error
+    status: str = "idle"  # idle, running, paused, stopped, error, waiting_for_login
     messages_sent: int = 0
     messages_failed: int = 0
+    current_message_index: int = 0
+    current_message: Optional[str] = None
+    is_typing: bool = False
+    typing_progress: float = 0.0
+    failed_messages: List[Dict[str, Any]] = []  # Store failed messages for retry
+    last_error: Optional[str] = None
+    retry_count: int = 0
+    can_resume: bool = False
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    paused_at: Optional[datetime] = None
+    resumed_at: Optional[datetime] = None
     
 class AutoTyperSessionCreate(BaseModel):
     channel_id: str
