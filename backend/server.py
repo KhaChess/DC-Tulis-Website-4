@@ -629,6 +629,11 @@ async def get_auto_typer_sessions():
     """Get all auto-typer sessions"""
     sessions = await db.auto_typer_sessions.find().sort("created_at", -1).limit(50).to_list(50)
     
+    # Remove MongoDB ObjectId to avoid JSON serialization issues
+    for session in sessions:
+        if "_id" in session:
+            del session["_id"]
+    
     # Update with active session data
     for session in sessions:
         if session['id'] in active_sessions:
