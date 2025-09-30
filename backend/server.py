@@ -38,6 +38,57 @@ api_router = APIRouter(prefix="/api")
 # Global storage for active sessions
 active_sessions: Dict[str, Dict[str, Any]] = {}
 
+# WebSocket Connection Manager
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: Dict[str, WebSocket] = {}
+
+    async def connect(self, websocket: WebSocket, session_id: str):
+        await websocket.accept()
+        self.active_connections[session_id] = websocket
+        logger.info(f"WebSocket connected for session: {session_id}")
+
+    def disconnect(self, session_id: str):
+        if session_id in self.active_connections:
+            del self.active_connections[session_id]
+            logger.info(f"WebSocket disconnected for session: {session_id}")
+
+    async def send_message(self, session_id: str, data: dict):
+        if session_id in self.active_connections:
+            websocket = self.active_connections[session_id]
+            if websocket.client_state == WebSocketState.CONNECTED:
+                try:
+                    await websocket.send_json(data)
+                except Exception as e:
+                    logger.error(f"Error sending WebSocket message to {session_id}: {str(e)}")
+                    self.disconnect(session_id)
+
+    async def broadcast_session_update(self, session_id: str, update_data: dict):
+        """Send session update to connected client"""
+        await self.send_message(session_id, {
+            "type": "session_update",
+            "session_id": session_id,
+            "data": update_data
+        })
+
+    async def send_typing_update(self, session_id: str, typing_data: dict):
+        """Send typing indicator update"""
+        await self.send_message(session_id, {
+            "type": "typing_update", 
+            "session_id": session_id,
+            "data": typing_data
+        })
+
+    async def send_error_notification(self, session_id: str, error_data: dict):
+        """Send error notification"""
+        await self.send_message(session_id, {
+            "type": "error_notification",
+            "session_id": session_id,
+            "data": error_data
+        })
+
+manager = ConnectionManager()
+
 # Discord automation function will be defined after models
 
 
