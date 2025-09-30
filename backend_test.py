@@ -902,15 +902,51 @@ class DiscordChannelAPITester:
         return passed, total, self.test_results
 
 if __name__ == "__main__":
-    tester = DiscordChannelAPITester()
-    passed, total, results = tester.run_all_tests()
+    print("🎯 COMPREHENSIVE BACKEND API TESTING")
+    print("Testing Enhanced Discord Autotyper + Channel Management")
+    print("=" * 80)
     
-    # Save detailed results
-    with open("/app/test_results_detailed.json", "w") as f:
-        json.dump({
-            "summary": {"passed": passed, "total": total, "success_rate": passed/total},
-            "results": results,
-            "timestamp": datetime.now().isoformat()
-        }, f, indent=2)
+    # Run Enhanced Discord Autotyper Tests
+    print("\n" + "🤖 PHASE 1: ENHANCED DISCORD AUTOTYPER TESTS" + "\n")
+    autotyper_tester = EnhancedDiscordAutotyperTester()
+    autotyper_passed, autotyper_total, autotyper_results = autotyper_tester.run_all_tests()
     
-    print(f"\n📝 Detailed results saved to: /app/test_results_detailed.json")
+    # Run Discord Channel Management Tests
+    print("\n" + "📁 PHASE 2: DISCORD CHANNEL MANAGEMENT TESTS" + "\n")
+    channel_tester = DiscordChannelAPITester()
+    channel_passed, channel_total, channel_results = channel_tester.run_all_tests()
+    
+    # Combined Summary
+    total_passed = autotyper_passed + channel_passed
+    total_tests = autotyper_total + channel_total
+    
+    print("\n" + "=" * 80)
+    print("🏆 FINAL COMPREHENSIVE TEST SUMMARY")
+    print("=" * 80)
+    print(f"Enhanced Autotyper: {autotyper_passed}/{autotyper_total} tests passed")
+    print(f"Channel Management: {channel_passed}/{channel_total} tests passed")
+    print(f"OVERALL: {total_passed}/{total_tests} tests passed ({(total_passed/total_tests)*100:.1f}%)")
+    
+    if total_passed == total_tests:
+        print("🎉 ALL TESTS PASSED! Backend is fully functional with enhanced features.")
+    else:
+        print(f"⚠️  {total_tests - total_passed} tests failed. Review details above.")
+    
+    # Save comprehensive results
+    comprehensive_results = {
+        "summary": {
+            "total_passed": total_passed,
+            "total_tests": total_tests,
+            "success_rate": total_passed/total_tests,
+            "autotyper_results": {"passed": autotyper_passed, "total": autotyper_total},
+            "channel_results": {"passed": channel_passed, "total": channel_total}
+        },
+        "autotyper_tests": autotyper_results,
+        "channel_tests": channel_results,
+        "timestamp": datetime.now().isoformat()
+    }
+    
+    with open("/app/comprehensive_test_results.json", "w") as f:
+        json.dump(comprehensive_results, f, indent=2)
+    
+    print(f"\n📝 Comprehensive results saved to: /app/comprehensive_test_results.json")
