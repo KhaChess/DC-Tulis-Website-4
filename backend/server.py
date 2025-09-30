@@ -285,7 +285,7 @@ async def discord_automation(session_id: str, session_data: AutoTyperSession):
         if browser:
             try:
                 await browser.close()
-            except:
+            except Exception:
                 pass
 
 async def send_message_with_typing(page, session_id: str, message: str, typing_delay: int):
