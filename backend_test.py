@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Enhanced Backend API Testing for Discord Autotyper with WebSocket and Real-time Features
-Tests WebSocket connections, session management, pause/resume, retry mechanisms, and real-time updates
+Backend API Testing for Discord Autotyper - Focus on Browser Automation Session Creation
+Tests specifically for the "Failed to start browser automation session" error fix
 """
 
 import requests
@@ -15,7 +15,7 @@ from typing import Dict, List, Any
 
 # Configuration
 BASE_URL = "https://web-autotyper-1.preview.emergentagent.com/api"
-WS_URL = "wss://chatflow-automation.preview.emergentagent.com/api/ws"
+WS_URL = "wss://web-autotyper-1.preview.emergentagent.com/api/ws"
 HEADERS = {"Content-Type": "application/json"}
 
 # Test data
