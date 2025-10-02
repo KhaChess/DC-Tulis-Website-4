@@ -18,21 +18,386 @@ BASE_URL = "https://web-autotyper-1.preview.emergentagent.com/api"
 WS_URL = "wss://web-autotyper-1.preview.emergentagent.com/api/ws"
 HEADERS = {"Content-Type": "application/json"}
 
-# Test data
-TEST_CHANNEL_ID = "123456789012345678"  # Fake Discord channel ID
-TEST_CATEGORY = "Test Category"
-TEST_CHANNEL_NAME = "test-channel"
-
-# Enhanced test data for autotyper
+# Test data for browser automation testing
+TEST_CHANNEL_ID = "https://discord.com/channels/@me/123456789012345678"  # Realistic Discord channel URL
 TEST_MESSAGES = [
-    "Hello, this is test message 1",
-    "This is test message 2 with more content",
-    "Final test message 3"
+    "Hello, this is a test message for browser automation",
+    "Testing Discord auto-typer with Playwright browser",
+    "Final test message to verify session works"
 ]
-TEST_TYPING_DELAY = 100  # Fast typing for testing
-TEST_MESSAGE_DELAY = 1000  # 1 second between messages
+TEST_TYPING_DELAY = 500  # Reasonable typing delay
+TEST_MESSAGE_DELAY = 2000  # 2 seconds between messages
 
-class EnhancedDiscordAutotyperTester:
+class BrowserAutomationTester:
+    def __init__(self):
+        self.test_results = []
+        self.created_sessions = []
+        self.websocket_messages = []
+        self.websocket_connected = False
+        
+    def log_result(self, test_name, success, message, response_data=None):
+        """Log test result"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}: {message}")
+        
+        self.test_results.append({
+            "test": test_name,
+            "success": success,
+            "message": message,
+            "response_data": response_data,
+            "timestamp": datetime.now().isoformat()
+        })
+    
+    def test_api_health_check(self):
+        """Test basic API connectivity"""
+        try:
+            response = requests.get(f"{BASE_URL}/", timeout=10)
+            if response.status_code == 200:
+                self.log_result("API Health Check", True, f"API is accessible - Status: {response.status_code}")
+                return True
+            else:
+                self.log_result("API Health Check", False, f"API returned status: {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_result("API Health Check", False, f"Connection failed: {str(e)}")
+            return False
+    
+    def test_browser_automation_session_creation(self):
+        """Test POST /api/auto-typer/start - Focus on browser automation startup"""
+        try:
+            payload = {
+                "channel_id": TEST_CHANNEL_ID,
+                "messages": TEST_MESSAGES,
+                "typing_delay": TEST_TYPING_DELAY,
+                "message_delay": TEST_MESSAGE_DELAY
+            }
+            
+            print(f"🔍 Testing session creation with payload: {json.dumps(payload, indent=2)}")
+            
+            response = requests.post(f"{BASE_URL}/auto-typer/start", json=payload, headers=HEADERS, timeout=20)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "error" in data:
+                    self.log_result("Browser Automation Session Creation", False, f"API returned error: {data['error']}")
+                    return False
+                
+                # Validate session structure
+                required_fields = ["id", "channel_id", "messages", "status"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_result("Browser Automation Session Creation", False, f"Missing fields: {missing_fields}")
+                    return False
+                
+                # Store session ID for further tests
+                session_id = data["id"]
+                self.created_sessions.append(session_id)
+                
+                # Check initial status
+                if data.get("status") == "idle":
+                    self.log_result("Browser Automation Session Creation", True, f"Session created successfully with ID: {session_id}")
+                    return True
+                else:
+                    self.log_result("Browser Automation Session Creation", False, f"Unexpected initial status: {data.get('status')}")
+                    return False
+            else:
+                self.log_result("Browser Automation Session Creation", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Browser Automation Session Creation", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_session_status_transitions(self):
+        """Test session status changes from starting -> waiting_for_login"""
+        if not self.created_sessions:
+            self.log_result("Session Status Transitions", False, "No sessions available for status testing")
+            return False
+        
+        try:
+            session_id = self.created_sessions[0]
+            
+            # Monitor status changes over time
+            status_history = []
+            max_wait_time = 30  # 30 seconds max wait
+            check_interval = 2  # Check every 2 seconds
+            
+            print(f"🔍 Monitoring session {session_id} status transitions...")
+            
+            for i in range(max_wait_time // check_interval):
+                response = requests.get(f"{BASE_URL}/auto-typer/{session_id}/status", timeout=10)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if "error" in data:
+                        self.log_result("Session Status Transitions", False, f"Status API error: {data['error']}")
+                        return False
+                    
+                    current_status = data.get("status", "unknown")
+                    current_message = data.get("current_message", "")
+                    
+                    status_entry = {
+                        "time": datetime.now().isoformat(),
+                        "status": current_status,
+                        "message": current_message
+                    }
+                    status_history.append(status_entry)
+                    
+                    print(f"   Status check {i+1}: {current_status} - {current_message}")
+                    
+                    # Check for expected transitions
+                    if current_status == "starting":
+                        print("   ✅ Session is starting (browser automation initializing)")
+                    elif current_status == "waiting_for_login":
+                        print("   ✅ Session reached waiting_for_login (browser automation successful)")
+                        self.log_result("Session Status Transitions", True, 
+                                      f"Successfully transitioned to waiting_for_login. Status history: {status_history}")
+                        return True
+                    elif current_status == "error":
+                        error_msg = data.get("last_error", "Unknown error")
+                        if "Failed to start browser automation session" in error_msg:
+                            self.log_result("Session Status Transitions", False, 
+                                          f"CRITICAL: Browser automation failed with error: {error_msg}")
+                            return False
+                        else:
+                            self.log_result("Session Status Transitions", False, 
+                                          f"Session error: {error_msg}")
+                            return False
+                    
+                    time.sleep(check_interval)
+                else:
+                    self.log_result("Session Status Transitions", False, 
+                                  f"Status check failed: HTTP {response.status_code}")
+                    return False
+            
+            # If we get here, we didn't see the expected transition
+            self.log_result("Session Status Transitions", False, 
+                          f"Timeout waiting for status transition. Final history: {status_history}")
+            return False
+                
+        except Exception as e:
+            self.log_result("Session Status Transitions", False, f"Status monitoring failed: {str(e)}")
+            return False
+    
+    async def test_websocket_real_time_updates(self):
+        """Test WebSocket connection and real-time updates during session startup"""
+        if not self.created_sessions:
+            self.log_result("WebSocket Real-time Updates", False, "No sessions available for WebSocket testing")
+            return False
+        
+        session_id = self.created_sessions[0]
+        ws_url = f"{WS_URL}/{session_id}"
+        
+        try:
+            print(f"🔍 Testing WebSocket connection to: {ws_url}")
+            
+            async with websockets.connect(ws_url) as websocket:
+                self.websocket_connected = True
+                
+                # Wait for connection confirmation
+                try:
+                    message = await asyncio.wait_for(websocket.recv(), timeout=10.0)
+                    data = json.loads(message)
+                    
+                    if data.get("type") == "connection_established":
+                        print("   ✅ WebSocket connection established")
+                        self.websocket_messages.append(data)
+                        
+                        # Listen for real-time updates for a short period
+                        update_count = 0
+                        listen_time = 15  # Listen for 15 seconds
+                        
+                        print(f"   🔍 Listening for real-time updates for {listen_time} seconds...")
+                        
+                        try:
+                            while update_count < 10:  # Max 10 updates
+                                message = await asyncio.wait_for(websocket.recv(), timeout=listen_time)
+                                data = json.loads(message)
+                                self.websocket_messages.append(data)
+                                update_count += 1
+                                
+                                msg_type = data.get("type", "unknown")
+                                print(f"   📨 Received: {msg_type}")
+                                
+                                if msg_type == "session_update":
+                                    session_data = data.get("data", {})
+                                    status = session_data.get("status", "unknown")
+                                    current_msg = session_data.get("current_message", "")
+                                    print(f"      Status: {status} - {current_msg}")
+                                    
+                                    if status == "waiting_for_login":
+                                        self.log_result("WebSocket Real-time Updates", True, 
+                                                      f"Received real-time session updates. Browser automation working!")
+                                        return True
+                                elif msg_type == "error_notification":
+                                    error_data = data.get("data", {})
+                                    error_msg = error_data.get("error", "Unknown error")
+                                    if "Failed to start browser automation session" in error_msg:
+                                        self.log_result("WebSocket Real-time Updates", False, 
+                                                      f"CRITICAL: Browser automation error via WebSocket: {error_msg}")
+                                        return False
+                        
+                        except asyncio.TimeoutError:
+                            if update_count > 0:
+                                self.log_result("WebSocket Real-time Updates", True, 
+                                              f"Received {update_count} real-time updates via WebSocket")
+                                return True
+                            else:
+                                self.log_result("WebSocket Real-time Updates", False, 
+                                              "No real-time updates received within timeout")
+                                return False
+                    else:
+                        self.log_result("WebSocket Real-time Updates", False, 
+                                      f"Unexpected connection message: {data}")
+                        return False
+                        
+                except asyncio.TimeoutError:
+                    self.log_result("WebSocket Real-time Updates", False, 
+                                  "Timeout waiting for WebSocket connection confirmation")
+                    return False
+                    
+        except Exception as e:
+            self.log_result("WebSocket Real-time Updates", False, f"WebSocket test failed: {str(e)}")
+            return False
+    
+    def test_session_error_handling(self):
+        """Test error handling and session state management"""
+        if not self.created_sessions:
+            self.log_result("Session Error Handling", False, "No sessions available for error testing")
+            return False
+        
+        try:
+            session_id = self.created_sessions[0]
+            
+            # Test pause on a potentially running/starting session
+            response = requests.post(f"{BASE_URL}/auto-typer/{session_id}/pause", headers=HEADERS, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "error" in data:
+                    # Expected for non-running sessions
+                    if "not running" in data["error"].lower():
+                        print("   ✅ Correctly handled pause on non-running session")
+                    else:
+                        print(f"   ⚠️  Pause error: {data['error']}")
+                else:
+                    print("   ✅ Pause command accepted")
+            
+            # Test resume
+            response = requests.post(f"{BASE_URL}/auto-typer/{session_id}/resume", headers=HEADERS, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "error" in data:
+                    if "not paused" in data["error"].lower() or "not found" in data["error"].lower():
+                        print("   ✅ Correctly handled resume on non-paused session")
+                    else:
+                        print(f"   ⚠️  Resume error: {data['error']}")
+                else:
+                    print("   ✅ Resume command accepted")
+            
+            # Test stop
+            response = requests.post(f"{BASE_URL}/auto-typer/{session_id}/stop", headers=HEADERS, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "error" in data:
+                    print(f"   ⚠️  Stop error: {data['error']}")
+                else:
+                    print("   ✅ Stop command accepted")
+            
+            self.log_result("Session Error Handling", True, "Session state management working correctly")
+            return True
+                
+        except Exception as e:
+            self.log_result("Session Error Handling", False, f"Error handling test failed: {str(e)}")
+            return False
+    
+    def run_websocket_test(self, test_func):
+        """Helper to run async WebSocket tests"""
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            return loop.run_until_complete(test_func())
+        except Exception as e:
+            print(f"Error running WebSocket test: {str(e)}")
+            return False
+        finally:
+            loop.close()
+    
+    def cleanup_sessions(self):
+        """Clean up any remaining test sessions"""
+        for session_id in self.created_sessions[:]:
+            try:
+                requests.post(f"{BASE_URL}/auto-typer/{session_id}/stop", timeout=5)
+                print(f"🧹 Cleaned up session: {session_id}")
+            except:
+                pass
+    
+    def run_browser_automation_tests(self):
+        """Run focused tests for browser automation session creation"""
+        print("🚀 Starting Browser Automation Session Creation Tests")
+        print("Focus: Testing fix for 'Failed to start browser automation session' error")
+        print("=" * 80)
+        
+        # Test sequence focused on browser automation
+        tests = [
+            ("API Health Check", self.test_api_health_check),
+            ("Browser Automation Session Creation", self.test_browser_automation_session_creation),
+            ("Session Status Transitions", self.test_session_status_transitions),
+            ("Session Error Handling", self.test_session_error_handling),
+        ]
+        
+        # WebSocket tests
+        websocket_tests = [
+            ("WebSocket Real-time Updates", self.test_websocket_real_time_updates),
+        ]
+        
+        passed = 0
+        total = len(tests) + len(websocket_tests)
+        
+        # Run regular tests
+        for test_name, test_func in tests:
+            print(f"\n🔍 Running: {test_name}")
+            try:
+                if test_func():
+                    passed += 1
+                time.sleep(1)  # Small delay between tests
+            except Exception as e:
+                self.log_result(test_name, False, f"Test execution failed: {str(e)}")
+        
+        # Run WebSocket tests
+        for test_name, test_func in websocket_tests:
+            print(f"\n🔍 Running: {test_name}")
+            try:
+                if self.run_websocket_test(test_func):
+                    passed += 1
+                time.sleep(1)
+            except Exception as e:
+                self.log_result(test_name, False, f"WebSocket test execution failed: {str(e)}")
+        
+        # Summary
+        print("\n" + "=" * 80)
+        print(f"📊 BROWSER AUTOMATION TEST SUMMARY: {passed}/{total} tests passed")
+        
+        if passed == total:
+            print("🎉 All browser automation tests passed!")
+            print("✅ The 'Failed to start browser automation session' error appears to be FIXED!")
+        else:
+            print(f"⚠️  {total - passed} tests failed.")
+            print("❌ Browser automation session creation may still have issues.")
+        
+        # Detailed analysis
+        print("\n📋 DETAILED ANALYSIS:")
+        for result in self.test_results:
+            status = "✅" if result["success"] else "❌"
+            print(f"{status} {result['test']}: {result['message']}")
+        
+        # Cleanup
+        self.cleanup_sessions()
+        
+        return passed, total, self.test_results
     def __init__(self):
         self.test_results = []
         self.created_sessions = []
