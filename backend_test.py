@@ -120,7 +120,7 @@ class EnhancedDiscordAutotyperTester:
         ws_url = f"{WS_URL}/{session_id}"
         
         try:
-            async with websockets.connect(ws_url, timeout=10) as websocket:
+            async with websockets.connect(ws_url) as websocket:
                 self.websocket_connected = True
                 
                 # Wait for connection confirmation
