@@ -7,7 +7,7 @@ import requests
 import json
 import time
 
-BASE_URL = "https://chatflow-automation.preview.emergentagent.com/api"
+BASE_URL = "https://web-autotyper.preview.emergentagent.com/api"
 HEADERS = {"Content-Type": "application/json"}
 TEST_CHANNEL_ID = "123456789012345678"
 
