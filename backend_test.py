@@ -1267,51 +1267,44 @@ class DiscordChannelAPITester:
         return passed, total, self.test_results
 
 if __name__ == "__main__":
-    print("🎯 COMPREHENSIVE BACKEND API TESTING")
-    print("Testing Enhanced Discord Autotyper + Channel Management")
+    print("🎯 BROWSER AUTOMATION SESSION CREATION TESTING")
+    print("Testing fix for: 'Failed to start browser automation session' error")
     print("=" * 80)
     
-    # Run Enhanced Discord Autotyper Tests
-    print("\n" + "🤖 PHASE 1: ENHANCED DISCORD AUTOTYPER TESTS" + "\n")
-    autotyper_tester = EnhancedDiscordAutotyperTester()
-    autotyper_passed, autotyper_total, autotyper_results = autotyper_tester.run_all_tests()
+    # Run Browser Automation Tests
+    tester = BrowserAutomationTester()
+    passed, total, results = tester.run_browser_automation_tests()
     
-    # Run Discord Channel Management Tests
-    print("\n" + "📁 PHASE 2: DISCORD CHANNEL MANAGEMENT TESTS" + "\n")
-    channel_tester = DiscordChannelAPITester()
-    channel_passed, channel_total, channel_results = channel_tester.run_all_tests()
-    
-    # Combined Summary
-    total_passed = autotyper_passed + channel_passed
-    total_tests = autotyper_total + channel_total
-    
+    # Final Summary
     print("\n" + "=" * 80)
-    print("🏆 FINAL COMPREHENSIVE TEST SUMMARY")
+    print("🏆 FINAL TEST SUMMARY")
     print("=" * 80)
-    print(f"Enhanced Autotyper: {autotyper_passed}/{autotyper_total} tests passed")
-    print(f"Channel Management: {channel_passed}/{channel_total} tests passed")
-    print(f"OVERALL: {total_passed}/{total_tests} tests passed ({(total_passed/total_tests)*100:.1f}%)")
+    print(f"BROWSER AUTOMATION TESTS: {passed}/{total} tests passed ({(passed/total)*100:.1f}%)")
     
-    if total_passed == total_tests:
-        print("🎉 ALL TESTS PASSED! Backend is fully functional with enhanced features.")
+    if passed == total:
+        print("🎉 SUCCESS: Browser automation session creation is working!")
+        print("✅ The 'Failed to start browser automation session' error has been FIXED!")
+        print("✅ Playwright dependencies and browser installation are working correctly.")
     else:
-        print(f"⚠️  {total_tests - total_passed} tests failed. Review details above.")
+        print(f"⚠️  ISSUES FOUND: {total - passed} tests failed.")
+        print("❌ Browser automation may still have problems.")
+        print("🔍 Check the detailed analysis above for specific issues.")
     
-    # Save comprehensive results
-    comprehensive_results = {
+    # Save results
+    test_summary = {
+        "test_focus": "Browser Automation Session Creation",
+        "issue_tested": "Failed to start browser automation session",
         "summary": {
-            "total_passed": total_passed,
-            "total_tests": total_tests,
-            "success_rate": total_passed/total_tests,
-            "autotyper_results": {"passed": autotyper_passed, "total": autotyper_total},
-            "channel_results": {"passed": channel_passed, "total": channel_total}
+            "total_passed": passed,
+            "total_tests": total,
+            "success_rate": passed/total,
+            "status": "FIXED" if passed == total else "ISSUES_REMAIN"
         },
-        "autotyper_tests": autotyper_results,
-        "channel_tests": channel_results,
+        "test_results": results,
         "timestamp": datetime.now().isoformat()
     }
     
-    with open("/app/comprehensive_test_results.json", "w") as f:
-        json.dump(comprehensive_results, f, indent=2)
+    with open("/app/browser_automation_test_results.json", "w") as f:
+        json.dump(test_summary, f, indent=2)
     
-    print(f"\n📝 Comprehensive results saved to: /app/comprehensive_test_results.json")
+    print(f"\n📝 Test results saved to: /app/browser_automation_test_results.json")
