@@ -13,36 +13,36 @@
       "success": true,
       "message": "API is accessible - Status: 200",
       "response_data": null,
-      "timestamp": "2025-10-02T14:01:28.849444"
+      "timestamp": "2025-10-02T14:03:02.535858"
     },
     {
       "test": "Browser Automation Session Creation",
       "success": true,
-      "message": "Session created successfully with ID: cca1bf7b-85f0-4f85-b49e-ab8578778d40",
+      "message": "Session created successfully with ID: 44aaf8aa-3ba1-4e2d-af8f-c1e789a85669",
       "response_data": null,
-      "timestamp": "2025-10-02T14:01:29.906637"
+      "timestamp": "2025-10-02T14:03:03.580290"
     },
     {
       "test": "Session Status Transitions",
       "success": true,
-      "message": "Successfully transitioned to waiting_for_login. Status history: [{'time': '2025-10-02T14:01:31.009039', 'status': 'starting', 'message': None}, {'time': '2025-10-02T14:01:33.174370', 'status': 'waiting_for_login', 'message': 'Waiting for Discord login...'}]",
+      "message": "Successfully transitioned to waiting_for_login. Status history: [{'time': '2025-10-02T14:03:04.677266', 'status': 'starting', 'message': None}, {'time': '2025-10-02T14:03:06.779375', 'status': 'waiting_for_login', 'message': 'Waiting for Discord login...'}]",
       "response_data": null,
-      "timestamp": "2025-10-02T14:01:33.174417"
+      "timestamp": "2025-10-02T14:03:06.779414"
     },
     {
       "test": "Session Error Handling",
       "success": true,
       "message": "Session state management working correctly",
       "response_data": null,
-      "timestamp": "2025-10-02T14:01:34.421983"
+      "timestamp": "2025-10-02T14:03:08.002966"
     },
     {
       "test": "WebSocket Real-time Updates",
       "success": true,
       "message": "No immediate updates (expected for idle session)",
       "response_data": null,
-      "timestamp": "2025-10-02T14:01:40.487192"
+      "timestamp": "2025-10-02T14:03:14.055221"
     }
   ],
-  "timestamp": "2025-10-02T14:01:41.556142"
+  "timestamp": "2025-10-02T14:03:15.110754"
 }
