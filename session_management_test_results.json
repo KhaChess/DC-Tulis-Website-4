@@ -8,52 +8,52 @@
     {
       "test": "Session Creation",
       "success": true,
-      "message": "Session created with ID: 2217e8c8-378e-4dae-8e9c-739ff22c2a7c",
+      "message": "Session created with ID: a2a30ae0-b3f8-408e-974c-283ece1585f7",
       "details": "Status: idle, Messages: 2",
-      "timestamp": "2025-10-02T09:52:49.423006"
+      "timestamp": "2025-10-02T09:56:11.441339"
     },
     {
       "test": "Session Status",
       "success": true,
       "message": "Status: error, Enhanced fields: ['current_message', 'typing_progress', 'is_typing', 'can_resume']",
       "details": "Messages sent: 0, Failed: 0",
-      "timestamp": "2025-10-02T09:52:49.961862"
+      "timestamp": "2025-10-02T09:56:11.980376"
     },
     {
       "test": "Pause Control",
       "success": true,
       "message": "Correctly handled non-running session: Session is not running",
       "details": null,
-      "timestamp": "2025-10-02T09:52:50.502744"
+      "timestamp": "2025-10-02T09:56:12.521783"
     },
     {
       "test": "Resume Control",
       "success": true,
       "message": "Correctly handled non-paused session: Session is not paused",
       "details": null,
-      "timestamp": "2025-10-02T09:52:51.039637"
+      "timestamp": "2025-10-02T09:56:13.060595"
     },
     {
       "test": "Stop Control",
       "success": true,
       "message": "Stop response: Session stopped successfully",
       "details": null,
-      "timestamp": "2025-10-02T09:52:51.578518"
+      "timestamp": "2025-10-02T09:56:13.599589"
     },
     {
       "test": "WebSocket Connection",
       "success": true,
       "message": "WebSocket connected successfully",
       "details": "Message: WebSocket connection established",
-      "timestamp": "2025-10-02T09:52:52.124099"
+      "timestamp": "2025-10-02T09:56:14.147899"
     },
     {
       "test": "WebSocket Ping-Pong",
       "success": true,
       "message": "Ping-pong working correctly",
       "details": null,
-      "timestamp": "2025-10-02T09:52:52.126856"
+      "timestamp": "2025-10-02T09:56:14.151916"
     }
   ],
-  "timestamp": "2025-10-02T09:52:52.666253"
+  "timestamp": "2025-10-02T09:56:14.696966"
 }
