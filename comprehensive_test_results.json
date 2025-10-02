@@ -1,249 +1,174 @@
 {
   "summary": {
-    "total_passed": 21,
+    "total_passed": 2,
     "total_tests": 21,
-    "success_rate": 1.0,
+    "success_rate": 0.09523809523809523,
     "autotyper_results": {
-      "passed": 10,
+      "passed": 0,
       "total": 10
     },
     "channel_results": {
-      "passed": 11,
+      "passed": 2,
       "total": 11
     }
   },
   "autotyper_tests": [
     {
       "test": "API Health Check",
-      "success": true,
-      "message": "API is accessible - Status: 200",
+      "success": false,
+      "message": "API returned status: 502",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:05.767518"
+      "timestamp": "2025-10-02T09:49:19.040743"
     },
     {
       "test": "Enhanced Session Creation",
-      "success": true,
-      "message": "Enhanced session created with ID: f0a7a379-98f7-444d-9023-9dc73cf38b2e",
-      "response_data": {
-        "id": "f0a7a379-98f7-444d-9023-9dc73cf38b2e",
-        "channel_id": "123456789012345678",
-        "messages": [
-          "Hello, this is test message 1",
-          "This is test message 2 with more content",
-          "Final test message 3"
-        ],
-        "typing_delay": 100,
-        "message_delay": 1000,
-        "status": "idle",
-        "messages_sent": 0,
-        "messages_failed": 0,
-        "current_message_index": 0,
-        "current_message": null,
-        "is_typing": false,
-        "typing_progress": 0.0,
-        "failed_messages": [],
-        "last_error": null,
-        "retry_count": 0,
-        "can_resume": false,
-        "created_at": "2025-09-30T10:55:06.305246",
-        "paused_at": null,
-        "resumed_at": null
-      },
-      "timestamp": "2025-09-30T10:55:06.313110"
+      "success": false,
+      "message": "HTTP 502: ",
+      "response_data": null,
+      "timestamp": "2025-10-02T09:49:19.578356"
     },
     {
       "test": "Session Status",
-      "success": true,
-      "message": "Enhanced status retrieved successfully",
-      "response_data": {
-        "id": "f0a7a379-98f7-444d-9023-9dc73cf38b2e",
-        "channel_id": "123456789012345678",
-        "messages": [
-          "Hello, this is test message 1",
-          "This is test message 2 with more content",
-          "Final test message 3"
-        ],
-        "typing_delay": 100,
-        "message_delay": 1000,
-        "status": "error",
-        "messages_sent": 0,
-        "messages_failed": 0,
-        "current_message_index": 0,
-        "current_message": null,
-        "is_typing": false,
-        "typing_progress": 0.0,
-        "failed_messages": [],
-        "last_error": "BrowserType.launch: Executable doesn't exist at /root/.cache/ms-playwright/chromium_headless_shell-1187/chrome-linux/headless_shell\n\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\n\u2551 Looks like Playwright was just installed or updated.       \u2551\n\u2551 Please run the following command to download new browsers: \u2551\n\u2551                                                            \u2551\n\u2551     playwright install                                     \u2551\n\u2551                                                            \u2551\n\u2551 <3 Playwright Team                                         \u2551\n\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d",
-        "retry_count": 0,
-        "can_resume": true,
-        "created_at": "2025-09-30T10:55:06.305000",
-        "paused_at": null,
-        "resumed_at": null
-      },
-      "timestamp": "2025-09-30T10:55:06.852677"
+      "success": false,
+      "message": "No sessions available for status testing",
+      "response_data": null,
+      "timestamp": "2025-10-02T09:49:20.078880"
     },
     {
       "test": "Pause Functionality",
-      "success": true,
-      "message": "Correctly handled non-running session: Session is not running",
+      "success": false,
+      "message": "No sessions available for pause testing",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:07.396458"
+      "timestamp": "2025-10-02T09:49:20.578995"
     },
     {
       "test": "Resume Functionality",
-      "success": true,
-      "message": "Correctly handled non-paused session: Session is not paused",
+      "success": false,
+      "message": "No sessions available for resume testing",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:07.931357"
+      "timestamp": "2025-10-02T09:49:21.079107"
     },
     {
       "test": "Manual Retry",
-      "success": true,
-      "message": "Correctly handled no failed messages: No failed messages to retry",
+      "success": false,
+      "message": "No sessions available for retry testing",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:08.469060"
+      "timestamp": "2025-10-02T09:49:21.579219"
     },
     {
       "test": "Stop Functionality",
-      "success": true,
-      "message": "Session stopped successfully",
+      "success": false,
+      "message": "No sessions available for stop testing",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:15.923231"
+      "timestamp": "2025-10-02T09:49:22.079330"
     },
     {
       "test": "Get All Sessions",
-      "success": true,
-      "message": "Retrieved 2 sessions, test session found",
+      "success": false,
+      "message": "HTTP 502: ",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:16.503281"
+      "timestamp": "2025-10-02T09:49:22.617254"
     },
     {
       "test": "WebSocket Connection",
-      "success": true,
-      "message": "WebSocket connected successfully to session f0a7a379-98f7-444d-9023-9dc73cf38b2e",
+      "success": false,
+      "message": "No sessions available for WebSocket testing",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:17.049635"
-    },
-    {
-      "test": "WebSocket Ping-Pong",
-      "success": true,
-      "message": "WebSocket ping-pong working correctly",
-      "response_data": null,
-      "timestamp": "2025-09-30T10:55:17.052645"
+      "timestamp": "2025-10-02T09:49:23.118076"
     },
     {
       "test": "WebSocket Real-time Updates",
-      "success": true,
-      "message": "No immediate updates (expected for idle session)",
+      "success": false,
+      "message": "No sessions available for WebSocket testing",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:22.604545"
+      "timestamp": "2025-10-02T09:49:23.618429"
     }
   ],
   "channel_tests": [
     {
       "test": "API Health Check",
-      "success": true,
-      "message": "API is accessible - Status: 200",
+      "success": false,
+      "message": "API returned status: 502",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:23.208934"
+      "timestamp": "2025-10-02T09:49:24.173172"
     },
     {
       "test": "Get Channels (Empty)",
-      "success": true,
-      "message": "Retrieved 0 channels",
+      "success": false,
+      "message": "HTTP 502: ",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:23.753073"
+      "timestamp": "2025-10-02T09:49:24.705222"
     },
     {
       "test": "Create Channel",
-      "success": true,
-      "message": "Channel created successfully with ID: 966d4b92-1cee-48c8-b8c0-2b933f50c68c",
-      "response_data": {
-        "id": "966d4b92-1cee-48c8-b8c0-2b933f50c68c",
-        "channel_id": "123456789012345678",
-        "channel_name": null,
-        "guild_id": null,
-        "guild_name": null,
-        "category": "Test Category",
-        "is_favorite": false,
-        "created_at": "2025-09-30T10:55:24.288896",
-        "updated_at": "2025-09-30T10:55:24.288897"
-      },
-      "timestamp": "2025-09-30T10:55:24.292337"
+      "success": false,
+      "message": "HTTP 502: ",
+      "response_data": null,
+      "timestamp": "2025-10-02T09:49:25.240982"
     },
     {
       "test": "Get Channels (With Data)",
-      "success": true,
-      "message": "Retrieved 1 channels, test channel found",
+      "success": false,
+      "message": "HTTP 502: ",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:24.832661"
+      "timestamp": "2025-10-02T09:49:25.779837"
     },
     {
       "test": "Search Functionality",
-      "success": true,
-      "message": "Search by channel ID returned 1 results",
+      "success": false,
+      "message": "HTTP 502: ",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:25.369572"
+      "timestamp": "2025-10-02T09:49:26.316553"
     },
     {
       "test": "Category Filtering",
-      "success": true,
-      "message": "Category filter returned 1 channels",
+      "success": false,
+      "message": "HTTP 502: ",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:25.907352"
+      "timestamp": "2025-10-02T09:49:26.851844"
     },
     {
       "test": "Update Channel",
-      "success": true,
-      "message": "Channel updated successfully",
-      "response_data": {
-        "id": "966d4b92-1cee-48c8-b8c0-2b933f50c68c",
-        "channel_id": "123456789012345678",
-        "channel_name": "Updated Test Channel",
-        "guild_id": null,
-        "guild_name": null,
-        "category": "Updated Category",
-        "is_favorite": true,
-        "created_at": "2025-09-30T10:55:24.288000",
-        "updated_at": "2025-09-30T10:55:26.495000"
-      },
-      "timestamp": "2025-09-30T10:55:26.499402"
+      "success": false,
+      "message": "No channels available to update",
+      "response_data": null,
+      "timestamp": "2025-10-02T09:49:27.352360"
     },
     {
       "test": "Get Categories",
-      "success": true,
-      "message": "Retrieved 1 categories: ['Updated Category']",
+      "success": false,
+      "message": "HTTP 502: ",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:27.039736"
+      "timestamp": "2025-10-02T09:49:27.886220"
     },
     {
       "test": "Duplicate Channel Prevention",
       "success": true,
-      "message": "Correctly returned HTTP error: 500",
+      "message": "Correctly returned HTTP error: 502",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:27.578298"
+      "timestamp": "2025-10-02T09:49:28.422433"
     },
     {
       "test": "Error Handling (Update)",
       "success": true,
-      "message": "Correctly returned HTTP error: 500",
+      "message": "Correctly returned HTTP error: 502",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:28.114481"
+      "timestamp": "2025-10-02T09:49:28.957183"
     },
     {
       "test": "Error Handling (Delete)",
       "success": true,
-      "message": "Correctly returned HTTP error: 500",
+      "message": "Correctly returned HTTP error: 502",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:28.170454"
+      "timestamp": "2025-10-02T09:49:28.993573"
     },
     {
       "test": "Delete Channel",
-      "success": true,
-      "message": "Channel deleted successfully",
+      "success": false,
+      "message": "No channels available to delete",
       "response_data": null,
-      "timestamp": "2025-09-30T10:55:28.741582"
+      "timestamp": "2025-10-02T09:49:29.494183"
     }
   ],
-  "timestamp": "2025-09-30T10:55:29.242805"
+  "timestamp": "2025-10-02T09:49:29.994322"
 }
